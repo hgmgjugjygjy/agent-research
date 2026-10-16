@@ -36,7 +36,7 @@
 
 ## 3. 竞品架构要点（摘要）
 
-详细章节见 `01-competitors/`；图示见 `diagrams/`；**产品运行页截图**见 [`product-snapshots/`](product-snapshots/)。
+详细章节见 `01-competitors/`；图示见 `diagrams/`。
 
 ### 3.1 ARTEX — 双图驱动的平台型调度
 
@@ -137,7 +137,16 @@ Aurora 覆盖 L1–L4 最完整；Clouditera VulnHunter 强在 L5（decide/gate/
 
 ## 5. 框架层结论
 
-详见 `02-frameworks/pi-dsh-langchain-langgraph.md`。
+独立使用文档（推荐单篇阅读）：
+
+| 框架 | 文档 |
+|---|---|
+| pi | [`02-frameworks/pi.md`](02-frameworks/pi.md) |
+| dsh | [`02-frameworks/dsh.md`](02-frameworks/dsh.md) |
+| LangChain | [`02-frameworks/langchain.md`](02-frameworks/langchain.md) |
+| LangGraph | [`02-frameworks/langgraph.md`](02-frameworks/langgraph.md) |
+
+选型对比：[`02-frameworks/pi-dsh-langchain-langgraph.md`](02-frameworks/pi-dsh-langchain-langgraph.md)。
 
 - **LangGraph**：战役编排与 HITL 首选  
 - **pi**：会话循环与 compaction 首选参考/可嵌入  
@@ -214,7 +223,12 @@ Aurora 覆盖 L1–L4 最完整；Clouditera VulnHunter 强在 L5（decide/gate/
 |---|---|
 | `00-index.md` | 索引与结论 |
 | `01-competitors/*.md` | 六竞品全文 |
-| `02-frameworks/pi-dsh-langchain-langgraph.md` | 框架专章 |
+| `02-frameworks/pi.md` | pi 独立使用文档 |
+| `02-frameworks/dsh.md` | dsh 独立使用文档 |
+| `02-frameworks/langchain.md` | LangChain 独立使用文档 |
+| `02-frameworks/langgraph.md` | LangGraph 独立使用文档 |
+| `02-frameworks/pi-dsh-langchain-langgraph.md` | 四框架对比专章 |
+| `02-frameworks/youngflow.md` | YoungFlow 框架专章 |
 | `03-comparison-matrix.md` | 对比矩阵 |
 | `04-architecture-research.md` | 本总报告 |
 | `diagrams/<name>/{architecture,sequence,dataflow}.json` | Archify IR（showcase 几何已校正） |

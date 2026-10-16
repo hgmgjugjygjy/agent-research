@@ -1,4 +1,8 @@
-# 框架专章：pi · dsh · LangChain · LangGraph
+# 框架专章：pi · dsh · LangChain · LangGraph（对比）
+
+> **独立使用文档**（是什么 / 应用场景 / 如何使用 / 效益）：
+> [pi.md](./pi.md) · [dsh.md](./dsh.md) · [langchain.md](./langchain.md) · [langgraph.md](./langgraph.md)。  
+> 本章保留为**四框架选型对比**；细节用法以独立文档为准。
 
 > 本章服务「自建智能体调度平台」选型：比较 **Agent Harness / 编排运行时**，不讨论漏洞利用细节。  
 > 参考：earendil-works/pi、deepseek-ai/deepseek-harness、LangChain/LangGraph 官方文档、arXiv:2608.23953。

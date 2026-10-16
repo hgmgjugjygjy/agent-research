@@ -3,7 +3,7 @@
 **文档版本**：2026-10-16（Asia/Shanghai）  
 **目标**：为自建「漏洞扫描 / 挖掘」智能体调度平台提供架构选型材料。  
 **范围**：调度管理、上下文压缩、门限审核、技术栈；**不含** exploit / PoC 利用步骤。  
-**交付仓**：`vevenlcf2/agent-research`（由父代理合入；本工作区不 push）。
+**交付仓**：`vevenlcf2/agent-research`。
 
 ---
 
@@ -30,7 +30,11 @@
 | [02-frameworks/youngflow.md](02-frameworks/youngflow.md) | YoungFlow：LangGraph+pi flow runner |
 | [01-competitors/Full-Chain-Sentinel-System.md](01-competitors/Full-Chain-Sentinel-System.md) | pi fork 渗透控制台 |
 | [01-competitors/DeepAudit.md](01-competitors/DeepAudit.md) | ReAct 多 Agent 代码审计 |
-| [02-frameworks/pi-dsh-langchain-langgraph.md](02-frameworks/pi-dsh-langchain-langgraph.md) | 框架专章 |
+| [02-frameworks/pi.md](02-frameworks/pi.md) | **pi** 独立使用：是什么 / 场景 / 用法 / 效益 |
+| [02-frameworks/dsh.md](02-frameworks/dsh.md) | **dsh** 独立使用：是什么 / 场景 / 用法 / 效益 |
+| [02-frameworks/langchain.md](02-frameworks/langchain.md) | **LangChain** 独立使用：是什么 / 场景 / 用法 / 效益 |
+| [02-frameworks/langgraph.md](02-frameworks/langgraph.md) | **LangGraph** 独立使用：是什么 / 场景 / 用法 / 效益 |
+| [02-frameworks/pi-dsh-langchain-langgraph.md](02-frameworks/pi-dsh-langchain-langgraph.md) | 四框架**对比**专章（非用法主文档） |
 | [03-comparison-matrix.md](03-comparison-matrix.md) | 对比矩阵 |
 | [04-architecture-research.md](04-architecture-research.md) | **总架构调研文档（可作 README）** |
 | [diagrams/](diagrams/) | Archify JSON/HTML + 粗骨架 mermaid + **代码视角** `code-*-mermaid.md`（见 [diagrams/README.md](diagrams/README.md)） |
