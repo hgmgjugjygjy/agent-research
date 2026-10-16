@@ -36,7 +36,7 @@
 
 ## 3. 竞品架构要点（摘要）
 
-详细章节见 `01-competitors/`；图示见 `diagrams/`。
+详细章节见 `01-competitors/`；图示见 `diagrams/`；**产品运行页截图**见 [`product-snapshots/`](product-snapshots/)。
 
 ### 3.1 ARTEX — 双图驱动的平台型调度
 

@@ -51,3 +51,8 @@ done
 | frameworks (pi/dsh/LangChain/LangGraph) | [code-modules-mermaid.md](./frameworks/code-modules-mermaid.md) | [code-sequence-mermaid.md](./frameworks/code-sequence-mermaid.md) |
 
 阅读建议：先看竞品 `01-competitors/*.md`，再用本表对照真实路径；**VulnHunter 已纠偏为 Clouditera**，时序为 YoungFlow decide 螺旋（非 capitalone Hunt→Falsify→Verify）。框架图含 YoungFlow。
+
+
+## 产品运行页快照
+
+选型对照用的真实 UI 截图见仓库根 [product-snapshots/](../product-snapshots/)（非本目录 Archify 图）。

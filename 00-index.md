@@ -34,6 +34,7 @@
 | [03-comparison-matrix.md](03-comparison-matrix.md) | 对比矩阵 |
 | [04-architecture-research.md](04-architecture-research.md) | **总架构调研文档（可作 README）** |
 | [diagrams/](diagrams/) | Archify JSON/HTML + 粗骨架 mermaid + **代码视角** `code-*-mermaid.md`（见 [diagrams/README.md](diagrams/README.md)） |
+| [product-snapshots/](product-snapshots/) | **产品运行页快照**（Web/控制台/TUI；非 GitHub 整页；见 [product-snapshots/README.md](product-snapshots/README.md)） |
 
 ## 各竞品一句话
 
