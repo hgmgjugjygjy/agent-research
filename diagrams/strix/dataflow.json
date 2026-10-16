@@ -2,19 +2,16 @@
   "schema_version": 1,
   "diagram_type": "dataflow",
   "meta": {
-    "title": "Strix 会话压缩数据流",
-    "subtitle": "overflow → checkpoint + recent",
+    "title": "strix 上下文压缩",
+    "subtitle": "session → budget → summary → ckpt",
     "locale": "zh-CN",
-    "output": "strix-dataflow.html",
-    "repository": {
-      "host": "github",
-      "owner": "usestrix",
-      "name": "strix"
-    },
+    "output": "dataflow.html",
     "viewBox": [
-      960,
-      560
-    ]
+      1080,
+      520
+    ],
+    "animation": "trace",
+    "quality_profile": "showcase"
   },
   "stages": [
     {
@@ -24,71 +21,63 @@
       "label": "计量"
     },
     {
-      "label": "摘要"
+      "label": "压缩"
     },
     {
-      "label": "重写"
+      "label": "落盘"
     }
   ],
   "nodes": [
     {
       "id": "sess",
-      "type": "database",
-      "label": "Session items",
+      "type": "backend",
+      "label": "Session",
       "stage": 0,
       "row": 0
     },
     {
       "id": "budget",
       "type": "backend",
-      "label": "Token budget",
+      "label": "Budget",
       "stage": 1,
       "row": 0
     },
     {
       "id": "sum",
       "type": "backend",
-      "label": "Security summary LLM",
+      "label": "Summary",
       "stage": 2,
       "row": 0
     },
     {
       "id": "ckpt",
       "type": "database",
-      "label": "conversation-checkpoint",
+      "label": "Checkpoint",
       "stage": 3,
       "row": 0
-    },
-    {
-      "id": "recent",
-      "type": "database",
-      "label": "Recent turns",
-      "stage": 3,
-      "row": 1
     }
   ],
   "flows": [
     {
+      "id": "f0",
       "from": "sess",
       "to": "budget",
-      "label": "count_tokens"
+      "label": "count",
+      "route": "straight"
     },
     {
+      "id": "f1",
       "from": "budget",
       "to": "sum",
-      "label": "head 超阈"
+      "label": "over",
+      "route": "straight"
     },
     {
+      "id": "f2",
       "from": "sum",
       "to": "ckpt",
-      "label": "结构化摘要",
-      "classification": "security-sensitive"
-    },
-    {
-      "from": "sess",
-      "to": "recent",
-      "label": "keep_tokens 尾部",
-      "variant": "dashed"
+      "label": "persist",
+      "route": "straight"
     }
   ]
 }

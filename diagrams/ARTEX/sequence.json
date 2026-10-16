@@ -1,21 +1,16 @@
 {
-  "schema_version": 1,
-  "diagram_type": "sequence",
   "meta": {
     "title": "ARTEX 一轮探索调度",
     "subtitle": "图变更→规划→执行→写回",
-    "locale": "zh-CN",
-    "output": "ARTEX-sequence.html",
-    "repository": {
-      "host": "github",
-      "owner": "RuoJi6",
-      "name": "ARTEX"
-    },
     "viewBox": [
-      960,
-      720
+      1080,
+      580
     ],
-    "column_fit": "spread"
+    "column_fit": "spread",
+    "animation": "trace",
+    "output": "sequence.html",
+    "locale": "zh-CN",
+    "quality_profile": "showcase"
   },
   "participants": [
     {
@@ -51,54 +46,62 @@
   ],
   "messages": [
     {
+      "id": "m0",
       "from": "ev",
       "to": "p",
-      "y": 180,
-      "label": "debounce 唤醒"
+      "y": 160,
+      "label": "debounce wake"
     },
     {
+      "id": "m1",
       "from": "p",
       "to": "db",
-      "y": 230,
-      "label": "读态势 + maintain 冷戳"
+      "y": 202,
+      "label": "read + maintain"
     },
     {
+      "id": "m2",
       "from": "p",
       "to": "fr",
-      "y": 280,
-      "label": "派 0..N 意图"
+      "y": 245,
+      "label": "dispatch intents"
     },
     {
+      "id": "m3",
       "from": "w",
       "to": "fr",
-      "y": 330,
+      "y": 288,
       "label": "claimNext"
     },
     {
+      "id": "m4",
       "from": "w",
       "to": "g",
-      "y": 380,
+      "y": 331,
       "label": "PreToolUse"
     },
     {
+      "id": "m5",
       "from": "g",
       "to": "w",
-      "y": 430,
-      "label": "allow/ask/deny",
-      "variant": "return"
+      "y": 374,
+      "label": "allow/deny"
     },
     {
+      "id": "m6",
       "from": "w",
       "to": "db",
-      "y": 480,
-      "label": "写 fact/asset/finding"
+      "y": 417,
+      "label": "write facts"
     },
     {
-      "from": "db",
-      "to": "ev",
-      "y": 530,
-      "label": "图变更",
-      "variant": "dashed"
+      "id": "m7",
+      "from": "w",
+      "to": "p",
+      "y": 460,
+      "label": "progress"
     }
-  ]
+  ],
+  "schema_version": 1,
+  "diagram_type": "sequence"
 }

@@ -32,7 +32,7 @@
 | [02-frameworks/pi-dsh-langchain-langgraph.md](02-frameworks/pi-dsh-langchain-langgraph.md) | 框架专章 |
 | [03-comparison-matrix.md](03-comparison-matrix.md) | 对比矩阵 |
 | [04-architecture-research.md](04-architecture-research.md) | **总架构调研文档（可作 README）** |
-| [diagrams/](diagrams/) | 每竞品 Archify JSON IR + mermaid 备用 |
+| [diagrams/](diagrams/) | 每竞品 Archify JSON IR + showcase HTML（18/18） |
 
 ## 各竞品一句话
 
@@ -52,7 +52,7 @@
 | dsh | 仓库与 architecture.md **公开完整**；渗透预制技能少，需自研插件。论文 2608.23953 可作收敛背景。 |
 | Aurora License | README 写 MIT，GitHub `license` 字段空，需法务再核。 |
 | ARTEX norma SDK | 核心 agent 能力在外部 SDK，源码阅读需结合公开 Go 封装层。 |
-| Archify render | 本交付为 **typed JSON IR + mermaid**；本机未装 Archify CLI，**待 Archify render** 出 HTML/SVG。 |
+| Archify render | **18/18 已 render**（`finalize --quality showcase`）。交互 HTML 见 [`diagrams/`](diagrams/)，状态见 [`diagrams/RENDER-STATUS.md`](diagrams/RENDER-STATUS.md)。 |
 
 ## 证据方法
 

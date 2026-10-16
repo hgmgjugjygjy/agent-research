@@ -1,175 +1,202 @@
 {
-  "schema_version": 1,
-  "diagram_type": "architecture",
   "meta": {
     "title": "ARTEX 系统架构",
     "subtitle": "Planner–Worker + 双图 + Guard",
+    "output": "architecture.html",
     "locale": "zh-CN",
-    "output": "ARTEX-architecture.html",
-    "repository": {
-      "host": "github",
-      "owner": "RuoJi6",
-      "name": "ARTEX"
-    },
-    "viewBox": [
-      960,
-      640
-    ],
-    "legend": {
-      "mode": "auto"
-    }
-  },
-  "layout": {
-    "mode": "grid",
-    "cols": 4,
-    "gapX": 28,
-    "gapY": 24,
-    "cellW": 160,
-    "cellH": 72
+    "quality_profile": "showcase"
   },
   "components": [
     {
       "id": "ui",
       "type": "frontend",
       "label": "Next.js UI",
-      "sublabel": "任务/审批/覆盖图",
-      "row": 0,
-      "col": 0
+      "pos": [
+        40,
+        80
+      ],
+      "size": [
+        130,
+        58
+      ],
+      "sublabel": "任务/审批"
     },
     {
       "id": "api",
       "type": "backend",
       "label": "Go server",
-      "sublabel": "REST+SSE",
-      "row": 0,
-      "col": 1
+      "pos": [
+        220,
+        80
+      ],
+      "size": [
+        130,
+        58
+      ],
+      "sublabel": "REST+SSE"
     },
     {
       "id": "engine",
       "type": "backend",
       "label": "Engine",
-      "sublabel": "plannerLoop×workers",
-      "row": 1,
-      "col": 1
+      "pos": [
+        400,
+        80
+      ],
+      "size": [
+        130,
+        58
+      ],
+      "sublabel": "planner×workers"
     },
     {
       "id": "planner",
       "type": "backend",
       "label": "Planner",
-      "sublabel": "意图生成+todolist",
-      "row": 1,
-      "col": 2
+      "pos": [
+        580,
+        80
+      ],
+      "size": [
+        130,
+        58
+      ],
+      "sublabel": "意图+todolist"
+    },
+    {
+      "id": "llm",
+      "type": "external",
+      "label": "LLM",
+      "pos": [
+        800,
+        80
+      ],
+      "size": [
+        130,
+        58
+      ],
+      "sublabel": "Provider"
     },
     {
       "id": "worker",
       "type": "backend",
       "label": "Workers",
-      "sublabel": "领意图执行",
-      "row": 2,
-      "col": 2
+      "pos": [
+        580,
+        220
+      ],
+      "size": [
+        130,
+        58
+      ],
+      "sublabel": "领意图执行"
     },
     {
       "id": "guard",
       "type": "security",
-      "label": "Guard/Intercept",
-      "sublabel": "PreToolUse ask",
-      "row": 2,
-      "col": 1
-    },
-    {
-      "id": "pg",
-      "type": "database",
-      "label": "PostgreSQL",
-      "sublabel": "资产图+探索图",
-      "row": 3,
-      "col": 1
-    },
-    {
-      "id": "llm",
-      "type": "external",
-      "label": "LLM Provider",
-      "row": 1,
-      "col": 3
+      "label": "Guard",
+      "pos": [
+        400,
+        220
+      ],
+      "size": [
+        130,
+        58
+      ],
+      "sublabel": "PreToolUse"
     },
     {
       "id": "proxy",
       "type": "security",
       "label": "MITM Proxy",
-      "sublabel": "流量留痕",
-      "row": 2,
-      "col": 3
-    }
-  ],
-  "boundaries": [
-    {
-      "kind": "region",
-      "label": "Agent Runtime (norma)",
-      "wraps": [
-        "planner",
-        "worker",
-        "guard"
-      ]
+      "pos": [
+        800,
+        220
+      ],
+      "size": [
+        130,
+        58
+      ],
+      "sublabel": "流量留痕"
     },
     {
-      "kind": "security-group",
-      "label": "Safety Boundary",
-      "wraps": [
-        "guard",
-        "proxy"
-      ]
+      "id": "pg",
+      "type": "database",
+      "label": "PostgreSQL",
+      "pos": [
+        400,
+        360
+      ],
+      "size": [
+        130,
+        58
+      ],
+      "sublabel": "资产图+探索图"
     }
   ],
   "connections": [
     {
+      "id": "c0",
       "from": "ui",
       "to": "api",
       "label": "HTTP/SSE"
     },
     {
+      "id": "c1",
       "from": "api",
       "to": "engine",
-      "label": "任务生命周期"
+      "label": "lifecycle"
     },
     {
+      "id": "c2",
       "from": "engine",
       "to": "planner",
-      "label": "唤醒"
+      "label": "wake"
     },
     {
+      "id": "c3",
       "from": "planner",
       "to": "worker",
-      "label": "意图 frontier"
+      "label": "frontier"
     },
     {
+      "id": "c4",
       "from": "worker",
       "to": "guard",
-      "label": "工具调用"
+      "label": "tool call"
     },
     {
+      "id": "c5",
       "from": "guard",
       "to": "proxy",
-      "label": "放行后执行",
+      "label": "allow",
       "variant": "dashed"
     },
     {
+      "id": "c6",
       "from": "planner",
       "to": "llm",
       "label": "Complete"
     },
     {
+      "id": "c7",
       "from": "worker",
       "to": "llm",
       "label": "Complete"
     },
     {
+      "id": "c8",
       "from": "planner",
       "to": "pg",
-      "label": "读写双图"
+      "label": "read/write"
     },
     {
+      "id": "c9",
       "from": "worker",
       "to": "pg",
-      "label": "写 fact/finding"
+      "label": "facts"
     }
-  ]
+  ],
+  "schema_version": 1,
+  "diagram_type": "architecture"
 }

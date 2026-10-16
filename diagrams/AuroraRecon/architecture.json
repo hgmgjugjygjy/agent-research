@@ -1,159 +1,186 @@
 {
-  "schema_version": 1,
-  "diagram_type": "architecture",
   "meta": {
     "title": "AuroraRecon 系统架构",
-    "subtitle": "LangGraph + 世界模型 + 分层门禁",
+    "subtitle": "LangGraph + 四层门禁",
+    "output": "architecture.html",
     "locale": "zh-CN",
-    "output": "AuroraRecon-architecture.html",
-    "repository": {
-      "host": "github",
-      "owner": "blkheadfish",
-      "name": "AuroraRecon"
-    },
-    "viewBox": [
-      960,
-      640
-    ],
-    "legend": {
-      "mode": "auto"
-    }
-  },
-  "layout": {
-    "mode": "grid",
-    "cols": 4,
-    "gapX": 28,
-    "gapY": 24,
-    "cellW": 160,
-    "cellH": 72
+    "quality_profile": "showcase"
   },
   "components": [
     {
       "id": "fe",
       "type": "frontend",
-      "label": "Vue3 Console",
-      "row": 0,
-      "col": 0
+      "label": "Web UI",
+      "pos": [
+        40,
+        80
+      ],
+      "size": [
+        130,
+        58
+      ]
     },
     {
       "id": "api",
       "type": "backend",
-      "label": "FastAPI",
-      "sublabel": "WS Redis Stream",
-      "row": 0,
-      "col": 1
+      "label": "API",
+      "pos": [
+        220,
+        80
+      ],
+      "size": [
+        130,
+        58
+      ],
+      "sublabel": "run/resume"
     },
     {
       "id": "orch",
       "type": "backend",
       "label": "Orchestrator",
-      "sublabel": "linear/feedback/supervisor",
-      "row": 1,
-      "col": 1
+      "pos": [
+        400,
+        80
+      ],
+      "size": [
+        130,
+        58
+      ],
+      "sublabel": "phases"
     },
     {
       "id": "sup",
       "type": "backend",
-      "label": "Supervisor/Agents",
-      "row": 1,
-      "col": 2
+      "label": "Supervisor",
+      "pos": [
+        580,
+        80
+      ],
+      "size": [
+        130,
+        58
+      ],
+      "sublabel": "ReAct"
+    },
+    {
+      "id": "llm",
+      "type": "external",
+      "label": "LLM",
+      "pos": [
+        800,
+        80
+      ],
+      "size": [
+        130,
+        58
+      ]
+    },
+    {
+      "id": "gate",
+      "type": "security",
+      "label": "Safety Gate",
+      "pos": [
+        400,
+        220
+      ],
+      "size": [
+        130,
+        58
+      ],
+      "sublabel": "pre-exec"
+    },
+    {
+      "id": "tb",
+      "type": "backend",
+      "label": "Tool Broker",
+      "pos": [
+        580,
+        220
+      ],
+      "size": [
+        130,
+        58
+      ],
+      "sublabel": "in-scope"
     },
     {
       "id": "wm",
       "type": "database",
       "label": "AttackGraph",
-      "sublabel": "世界模型",
-      "row": 2,
-      "col": 2
-    },
-    {
-      "id": "gate",
-      "type": "security",
-      "label": "Safety Stack",
-      "sublabel": "scope/YAML/irreversible",
-      "row": 2,
-      "col": 1
-    },
-    {
-      "id": "tb",
-      "type": "cloud",
-      "label": "Toolbox Container",
-      "row": 1,
-      "col": 3
+      "pos": [
+        800,
+        220
+      ],
+      "size": [
+        130,
+        58
+      ],
+      "sublabel": "world model"
     },
     {
       "id": "pg",
       "type": "database",
-      "label": "Postgres+CP",
-      "row": 3,
-      "col": 1
-    },
-    {
-      "id": "llm",
-      "type": "external",
-      "label": "LLM API",
-      "row": 0,
-      "col": 3
-    }
-  ],
-  "boundaries": [
-    {
-      "kind": "region",
-      "label": "LangGraph Runtime",
-      "wraps": [
-        "orch",
-        "sup",
-        "wm"
-      ]
-    },
-    {
-      "kind": "security-group",
-      "label": "Policy Gates",
-      "wraps": [
-        "gate"
+      "label": "Checkpointer",
+      "pos": [
+        220,
+        220
+      ],
+      "size": [
+        130,
+        58
       ]
     }
   ],
   "connections": [
     {
+      "id": "c0",
       "from": "fe",
       "to": "api",
       "label": "REST/WS"
     },
     {
+      "id": "c1",
       "from": "api",
       "to": "orch",
-      "label": "run/resume/approve"
+      "label": "run"
     },
     {
+      "id": "c2",
       "from": "orch",
       "to": "sup",
-      "label": "route phase"
+      "label": "route"
     },
     {
+      "id": "c3",
       "from": "sup",
       "to": "gate",
-      "label": "pre-exec check"
+      "label": "pre-check"
     },
     {
+      "id": "c4",
       "from": "gate",
       "to": "tb",
-      "label": "in-scope cmds"
+      "label": "cmds"
     },
     {
+      "id": "c5",
       "from": "sup",
       "to": "wm",
-      "label": "read/write graph"
+      "label": "graph I/O"
     },
     {
+      "id": "c6",
       "from": "orch",
       "to": "pg",
-      "label": "checkpointer"
+      "label": "checkpoint"
     },
     {
+      "id": "c7",
       "from": "sup",
       "to": "llm",
-      "label": "ReAct/decision"
+      "label": "decide"
     }
-  ]
+  ],
+  "schema_version": 1,
+  "diagram_type": "architecture"
 }

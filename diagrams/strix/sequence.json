@@ -1,27 +1,22 @@
 {
-  "schema_version": 1,
-  "diagram_type": "sequence",
   "meta": {
-    "title": "Strix 子 Agent 协作",
-    "subtitle": "create → work → finish → parent inbox",
-    "locale": "zh-CN",
-    "output": "strix-sequence.html",
-    "repository": {
-      "host": "github",
-      "owner": "usestrix",
-      "name": "strix"
-    },
+    "title": "strix agent 调度",
+    "subtitle": "create → wait → compact → report",
     "viewBox": [
-      960,
-      720
+      1080,
+      580
     ],
-    "column_fit": "spread"
+    "column_fit": "spread",
+    "animation": "trace",
+    "output": "sequence.html",
+    "locale": "zh-CN",
+    "quality_profile": "showcase"
   },
   "participants": [
     {
-      "id": "parent",
-      "type": "backend",
-      "label": "Parent"
+      "id": "cli",
+      "type": "frontend",
+      "label": "CLI"
     },
     {
       "id": "coord",
@@ -29,61 +24,84 @@
       "label": "Coordinator"
     },
     {
-      "id": "child",
+      "id": "root",
       "type": "backend",
-      "label": "Child"
+      "label": "Root"
     },
     {
-      "id": "tools",
+      "id": "child",
+      "type": "backend",
+      "label": "SubAgent"
+    },
+    {
+      "id": "sand",
       "type": "security",
-      "label": "Sandbox Tools"
+      "label": "Sandbox"
+    },
+    {
+      "id": "llm",
+      "type": "external",
+      "label": "LLM"
     }
   ],
   "messages": [
     {
-      "from": "parent",
+      "id": "m0",
+      "from": "cli",
       "to": "coord",
-      "y": 180,
+      "y": 160,
+      "label": "start scan"
+    },
+    {
+      "id": "m1",
+      "from": "coord",
+      "to": "root",
+      "y": 202,
       "label": "create_agent"
     },
     {
-      "from": "coord",
+      "id": "m2",
+      "from": "root",
+      "to": "llm",
+      "y": 245,
+      "label": "plan"
+    },
+    {
+      "id": "m3",
+      "from": "root",
       "to": "child",
-      "y": 230,
-      "label": "register+spawn"
+      "y": 288,
+      "label": "spawn"
     },
     {
+      "id": "m4",
       "from": "child",
-      "to": "tools",
-      "y": 280,
-      "label": "执行探测工具"
+      "to": "sand",
+      "y": 331,
+      "label": "tool exec"
     },
     {
-      "from": "tools",
+      "id": "m5",
+      "from": "sand",
       "to": "child",
-      "y": 330,
-      "label": "observation",
-      "variant": "return"
+      "y": 374,
+      "label": "result"
     },
     {
+      "id": "m6",
       "from": "child",
-      "to": "coord",
-      "y": 380,
-      "label": "agent_finish report"
+      "to": "root",
+      "y": 417,
+      "label": "done"
     },
     {
-      "from": "coord",
-      "to": "parent",
-      "y": 430,
-      "label": "inbox completion",
-      "variant": "emphasis"
-    },
-    {
-      "from": "parent",
+      "id": "m7",
+      "from": "root",
       "to": "coord",
-      "y": 480,
-      "label": "wait_for_agents / continue",
-      "variant": "dashed"
+      "y": 460,
+      "label": "findings"
     }
-  ]
+  ],
+  "schema_version": 1,
+  "diagram_type": "sequence"
 }

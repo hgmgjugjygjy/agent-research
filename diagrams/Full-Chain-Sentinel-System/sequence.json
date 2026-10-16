@@ -1,94 +1,107 @@
 {
-  "schema_version": 1,
-  "diagram_type": "sequence",
   "meta": {
-    "title": "全链哨兵工具审批",
-    "subtitle": "三档模式",
-    "locale": "zh-CN",
-    "output": "Full-Chain-Sentinel-System-sequence.html",
-    "repository": {
-      "host": "github",
-      "owner": "zgsfsec",
-      "name": "Full-Chain-Sentinel-System"
-    },
+    "title": "Full-Chain lane 执行",
+    "subtitle": "prompt → gate → kali → session",
     "viewBox": [
-      960,
-      720
+      1080,
+      580
     ],
-    "column_fit": "spread"
+    "column_fit": "spread",
+    "animation": "trace",
+    "output": "sequence.html",
+    "locale": "zh-CN",
+    "quality_profile": "showcase"
   },
   "participants": [
-    {
-      "id": "user",
-      "type": "frontend",
-      "label": "Operator"
-    },
     {
       "id": "web",
       "type": "frontend",
       "label": "Web"
     },
     {
-      "id": "agent",
+      "id": "ca",
       "type": "backend",
-      "label": "Agent"
+      "label": "CloudAgent"
+    },
+    {
+      "id": "har",
+      "type": "backend",
+      "label": "Harness"
     },
     {
       "id": "gate",
       "type": "security",
-      "label": "Approval Gate"
+      "label": "Gate"
     },
     {
-      "id": "box",
-      "type": "cloud",
+      "id": "kali",
+      "type": "security",
       "label": "Kali"
+    },
+    {
+      "id": "sess",
+      "type": "database",
+      "label": "Session"
     }
   ],
   "messages": [
     {
-      "from": "user",
-      "to": "web",
-      "y": 180,
-      "label": "提示/持续目标"
-    },
-    {
+      "id": "m0",
       "from": "web",
-      "to": "agent",
-      "y": 230,
-      "label": "run turn"
+      "to": "ca",
+      "y": 160,
+      "label": "prompt"
     },
     {
-      "from": "agent",
+      "id": "m1",
+      "from": "ca",
+      "to": "har",
+      "y": 202,
+      "label": "lane ops"
+    },
+    {
+      "id": "m2",
+      "from": "har",
       "to": "gate",
-      "y": 280,
-      "label": "bash 拟执行"
+      "y": 245,
+      "label": "bash tool"
     },
     {
+      "id": "m3",
       "from": "gate",
-      "to": "user",
-      "y": 330,
-      "label": "审批卡(默认模式)",
-      "variant": "security"
+      "to": "kali",
+      "y": 288,
+      "label": "docker exec"
     },
     {
-      "from": "user",
+      "id": "m4",
+      "from": "kali",
       "to": "gate",
-      "y": 380,
-      "label": "放行/编辑/拒绝"
+      "y": 331,
+      "label": "stdout"
     },
     {
+      "id": "m5",
       "from": "gate",
-      "to": "box",
-      "y": 430,
-      "label": "docker exec",
-      "variant": "emphasis"
+      "to": "har",
+      "y": 374,
+      "label": "result"
     },
     {
-      "from": "box",
-      "to": "agent",
-      "y": 480,
-      "label": "stdout",
-      "variant": "return"
+      "id": "m6",
+      "from": "har",
+      "to": "sess",
+      "y": 417,
+      "label": "append"
+    },
+    {
+      "id": "m7",
+      "from": "har",
+      "to": "ca",
+      "y": 460,
+      "label": "done"
     }
-  ]
+  ],
+  "schema_version": 1,
+  "diagram_type": "sequence"
 }

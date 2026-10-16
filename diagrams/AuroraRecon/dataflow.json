@@ -2,104 +2,82 @@
   "schema_version": 1,
   "diagram_type": "dataflow",
   "meta": {
-    "title": "Aurora 记忆与门禁数据流",
-    "subtitle": "prior + scope + decisions",
+    "title": "AuroraRecon 先验流",
+    "subtitle": "history → prior → graph → gate",
     "locale": "zh-CN",
-    "output": "AuroraRecon-dataflow.html",
-    "repository": {
-      "host": "github",
-      "owner": "blkheadfish",
-      "name": "AuroraRecon"
-    },
+    "output": "dataflow.html",
     "viewBox": [
-      960,
-      560
-    ]
+      1080,
+      520
+    ],
+    "animation": "trace",
+    "quality_profile": "showcase"
   },
   "stages": [
     {
       "label": "历史"
     },
     {
-      "label": "注入"
+      "label": "先验"
     },
     {
       "label": "决策"
     },
     {
-      "label": "执行门"
+      "label": "门禁"
     }
   ],
   "nodes": [
     {
       "id": "hist",
       "type": "database",
-      "label": "历史 TaskState",
+      "label": "History",
       "stage": 0,
       "row": 0
     },
     {
       "id": "prior",
       "type": "backend",
-      "label": "PriorIntel",
+      "label": "Prior",
       "stage": 1,
       "row": 0
     },
     {
       "id": "wm",
       "type": "database",
-      "label": "AttackGraph prior节点",
-      "stage": 1,
-      "row": 1
-    },
-    {
-      "id": "dec",
-      "type": "backend",
-      "label": "阶段决策",
+      "label": "Graph",
       "stage": 2,
-      "row": 0
-    },
-    {
-      "id": "scope",
-      "type": "security",
-      "label": "scope_guard",
-      "stage": 3,
       "row": 0
     },
     {
       "id": "safe",
       "type": "security",
-      "label": "safety_gate",
+      "label": "Gate",
       "stage": 3,
-      "row": 1
+      "row": 0
     }
   ],
   "flows": [
     {
+      "id": "f0",
       "from": "hist",
       "to": "prior",
-      "label": "extract (无明文密码)"
+      "label": "extract",
+      "route": "straight"
     },
     {
+      "id": "f1",
       "from": "prior",
       "to": "wm",
-      "label": "source=prior"
+      "label": "seed",
+      "route": "straight"
     },
     {
+      "id": "f2",
       "from": "wm",
-      "to": "dec",
-      "label": "frontier/chains"
-    },
-    {
-      "from": "dec",
-      "to": "scope",
-      "label": "命令目标"
-    },
-    {
-      "from": "dec",
       "to": "safe",
-      "label": "意图/CIDR",
-      "variant": "security"
+      "label": "check",
+      "route": "straight"
     }
   ]
 }

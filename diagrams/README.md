@@ -1,13 +1,36 @@
 # Diagrams
 
-每个竞品目录含 Archify typed JSON IR（`architecture.json` / `sequence.json` / `dataflow.json`）及 mermaid 备用（`*-mermaid.md`）。
+每个竞品目录含 Archify typed JSON IR 与已渲染 HTML（showcase）：
 
-**状态**：本机未安装 Archify CLI，JSON 已按 `tt-a1i/archify` schema v1 编写，**待 Archify render** 生成 HTML/SVG。
+| 文件 | 说明 |
+|------|------|
+| `architecture.json` / `.html` | 系统架构图 |
+| `sequence.json` / `.html` | 调度时序图 |
+| `dataflow.json` / `.html` | 上下文/数据流图 |
+| `*-mermaid.md` | mermaid 备用（未作为正式交付） |
 
-渲染示例（环境就绪后）：
+**渲染状态（2026-10-16）**：**18/18 已 render**（`finalize --quality showcase`）。
+
+CLI：`node /tmp/archify/archify/bin/archify.mjs`
+
+| 项目 | architecture | sequence | dataflow |
+|------|:------------:|:--------:|:--------:|
+| ARTEX | ✅ | ✅ | ✅ |
+| strix | ✅ | ✅ | ✅ |
+| AuroraRecon | ✅ | ✅ | ✅ |
+| vulnhunter | ✅ | ✅ | ✅ |
+| Full-Chain-Sentinel-System | ✅ | ✅ | ✅ |
+| DeepAudit | ✅ | ✅ | ✅ |
+
+详见 [RENDER-STATUS.md](./RENDER-STATUS.md)。
+
+重新渲染：
 
 ```bash
-archify render architecture diagrams/ARTEX/architecture.json
-archify render sequence diagrams/ARTEX/sequence.json
-archify render dataflow diagrams/ARTEX/dataflow.json
+ARCHIFY="node /tmp/archify/archify/bin/archify.mjs"
+for proj in ARTEX strix AuroraRecon vulnhunter Full-Chain-Sentinel-System DeepAudit; do
+  for typ in architecture sequence dataflow; do
+    $ARCHIFY finalize "$typ" "diagrams/$proj/$typ.json" "diagrams/$proj/$typ.html" --quality showcase --json
+  done
+done
 ```

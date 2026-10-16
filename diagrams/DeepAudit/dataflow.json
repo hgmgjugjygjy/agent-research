@@ -3,96 +3,81 @@
   "diagram_type": "dataflow",
   "meta": {
     "title": "DeepAudit 上下文压缩",
-    "subtitle": "100k 阈值摘要",
+    "subtitle": "msg → estimate → compress → llm",
     "locale": "zh-CN",
-    "output": "DeepAudit-dataflow.html",
-    "repository": {
-      "host": "github",
-      "owner": "lintsinghua",
-      "name": "DeepAudit"
-    },
+    "output": "dataflow.html",
     "viewBox": [
-      960,
-      560
-    ]
+      1080,
+      520
+    ],
+    "animation": "trace",
+    "quality_profile": "showcase"
   },
   "stages": [
     {
       "label": "消息"
     },
     {
-      "label": "计量"
+      "label": "估算"
     },
     {
-      "label": "摘要"
+      "label": "压缩"
     },
     {
-      "label": "继续推理"
+      "label": "调用"
     }
   ],
   "nodes": [
     {
       "id": "msg",
-      "type": "database",
-      "label": "messages[]",
+      "type": "backend",
+      "label": "Messages",
       "stage": 0,
       "row": 0
     },
     {
       "id": "est",
       "type": "backend",
-      "label": "TokenEstimator",
+      "label": "Estimate",
       "stage": 1,
       "row": 0
     },
     {
       "id": "cmp",
       "type": "backend",
-      "label": "MemoryCompressor",
+      "label": "Compress",
       "stage": 2,
       "row": 0
     },
     {
-      "id": "sum",
-      "type": "database",
-      "label": "context_summary",
-      "stage": 2,
-      "row": 1
-    },
-    {
       "id": "llm",
-      "type": "backend",
-      "label": "stream_llm_call",
+      "type": "external",
+      "label": "LLM",
       "stage": 3,
       "row": 0
     }
   ],
   "flows": [
     {
+      "id": "f0",
       "from": "msg",
       "to": "est",
-      "label": "count"
+      "label": "count",
+      "route": "straight"
     },
     {
+      "id": "f1",
       "from": "est",
       "to": "cmp",
-      "label": ">90% of 100k"
+      "label": "over90",
+      "route": "straight"
     },
     {
+      "id": "f2",
       "from": "cmp",
-      "to": "sum",
-      "label": "保留关键发现/工具"
-    },
-    {
-      "from": "sum",
       "to": "llm",
-      "label": "system+summary+recent"
-    },
-    {
-      "from": "msg",
-      "to": "llm",
-      "label": "近15条原文",
-      "variant": "dashed"
+      "label": "prompt",
+      "route": "straight"
     }
   ]
 }

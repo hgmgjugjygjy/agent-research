@@ -1,151 +1,183 @@
 {
-  "schema_version": 1,
-  "diagram_type": "architecture",
   "meta": {
     "title": "DeepAudit 系统架构",
-    "subtitle": "Orchestrator 树 + SSE",
+    "subtitle": "Recon/Analyze/Verify + memory",
+    "output": "architecture.html",
     "locale": "zh-CN",
-    "output": "DeepAudit-architecture.html",
-    "repository": {
-      "host": "github",
-      "owner": "lintsinghua",
-      "name": "DeepAudit"
-    },
-    "viewBox": [
-      960,
-      640
-    ],
-    "legend": {
-      "mode": "auto"
-    }
-  },
-  "layout": {
-    "mode": "grid",
-    "cols": 4,
-    "gapX": 28,
-    "gapY": 24,
-    "cellW": 160,
-    "cellH": 72
+    "quality_profile": "showcase"
   },
   "components": [
     {
       "id": "fe",
       "type": "frontend",
-      "label": "React AgentAudit",
-      "row": 0,
-      "col": 0
+      "label": "Frontend",
+      "pos": [
+        40,
+        80
+      ],
+      "size": [
+        130,
+        58
+      ]
     },
     {
       "id": "api",
       "type": "backend",
-      "label": "FastAPI agent-tasks",
-      "row": 0,
-      "col": 1
+      "label": "API",
+      "pos": [
+        220,
+        80
+      ],
+      "size": [
+        130,
+        58
+      ],
+      "sublabel": "REST+SSE"
     },
     {
       "id": "orch",
       "type": "backend",
-      "label": "OrchestratorAgent",
-      "row": 1,
-      "col": 1
+      "label": "Orchestrator",
+      "pos": [
+        400,
+        80
+      ],
+      "size": [
+        130,
+        58
+      ]
     },
     {
       "id": "recon",
       "type": "backend",
-      "label": "ReconAgent",
-      "row": 1,
-      "col": 2
+      "label": "Recon",
+      "pos": [
+        580,
+        80
+      ],
+      "size": [
+        130,
+        58
+      ]
     },
     {
       "id": "ana",
       "type": "backend",
-      "label": "AnalysisAgent",
-      "row": 2,
-      "col": 2
+      "label": "Analyze",
+      "pos": [
+        580,
+        220
+      ],
+      "size": [
+        130,
+        58
+      ]
     },
     {
       "id": "ver",
+      "type": "security",
+      "label": "Verify",
+      "pos": [
+        400,
+        220
+      ],
+      "size": [
+        130,
+        58
+      ]
+    },
+    {
+      "id": "tools",
       "type": "backend",
-      "label": "VerificationAgent",
-      "row": 2,
-      "col": 3
+      "label": "smart_scan",
+      "pos": [
+        800,
+        220
+      ],
+      "size": [
+        130,
+        58
+      ]
     },
     {
       "id": "mem",
       "type": "backend",
-      "label": "MemoryCompressor",
-      "row": 2,
-      "col": 1
+      "label": "Memory",
+      "pos": [
+        220,
+        220
+      ],
+      "size": [
+        130,
+        58
+      ],
+      "sublabel": "compress"
     },
     {
       "id": "pg",
       "type": "database",
-      "label": "Postgres/Supabase",
-      "row": 3,
-      "col": 1
-    },
-    {
-      "id": "tools",
-      "type": "security",
-      "label": "Scan Tools",
-      "sublabel": "Semgrep/Bandit…",
-      "row": 1,
-      "col": 3
-    }
-  ],
-  "boundaries": [
-    {
-      "kind": "region",
-      "label": "Multi-Agent Tree",
-      "wraps": [
-        "orch",
-        "recon",
-        "ana",
-        "ver",
-        "mem"
-      ]
+      "label": "Postgres",
+      "pos": [
+        800,
+        80
+      ],
+      "size": [
+        130,
+        58
+      ],
+      "sublabel": "ckpt"
     }
   ],
   "connections": [
     {
+      "id": "c0",
       "from": "fe",
       "to": "api",
-      "label": "REST+SSE"
+      "label": "REST"
     },
     {
+      "id": "c1",
       "from": "api",
       "to": "orch",
-      "label": "start task"
+      "label": "start"
     },
     {
+      "id": "c2",
       "from": "orch",
       "to": "recon",
-      "label": "dispatch"
+      "label": "go"
     },
     {
+      "id": "c3",
       "from": "orch",
       "to": "ana",
-      "label": "dispatch"
+      "label": "go"
     },
     {
+      "id": "c4",
       "from": "orch",
       "to": "ver",
-      "label": "dispatch"
+      "label": "go"
     },
     {
+      "id": "c5",
       "from": "ana",
       "to": "tools",
-      "label": "smart_scan"
+      "label": "scan"
     },
     {
+      "id": "c6",
       "from": "orch",
       "to": "mem",
-      "label": "auto_compress"
+      "label": "compress"
     },
     {
+      "id": "c7",
       "from": "orch",
       "to": "pg",
-      "label": "findings+checkpoints"
+      "label": "persist"
     }
-  ]
+  ],
+  "schema_version": 1,
+  "diagram_type": "architecture"
 }

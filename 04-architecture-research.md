@@ -216,7 +216,9 @@ Aurora 覆盖 L1–L4 最完整；VulnHunter 强在 L5；Strix/Sentinel 强在 L
 | `02-frameworks/pi-dsh-langchain-langgraph.md` | 框架专章 |
 | `03-comparison-matrix.md` | 对比矩阵 |
 | `04-architecture-research.md` | 本总报告 |
-| `diagrams/<name>/{architecture,sequence,dataflow}.json` | Archify IR（待 render） |
+| `diagrams/<name>/{architecture,sequence,dataflow}.json` | Archify IR（showcase 几何已校正） |
+| `diagrams/<name>/{architecture,sequence,dataflow}.html` | Archify showcase HTML（**18/18 已 render**） |
+| `diagrams/RENDER-STATUS.md` | 渲染状态清单 |
 | `diagrams/<name>/*-mermaid.md` | Mermaid 备用 |
 
 ---
@@ -241,4 +243,4 @@ Aurora 覆盖 L1–L4 最完整；VulnHunter 强在 L5；Strix/Sentinel 强在 L
 
 ---
 
-*本报告由产品调研执行器基于 GitHub API 与公开文档生成，未整仓 clone。Archify HTML/SVG 渲染待环境安装后执行。*
+*本报告由产品调研执行器基于 GitHub API 与公开文档生成，未整仓 clone。Archify showcase HTML 已补齐（18/18），详见 [`diagrams/RENDER-STATUS.md`](diagrams/RENDER-STATUS.md)。*

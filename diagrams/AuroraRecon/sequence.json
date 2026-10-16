@@ -1,100 +1,107 @@
 {
-  "schema_version": 1,
-  "diagram_type": "sequence",
   "meta": {
-    "title": "Aurora 审批中断恢复",
-    "subtitle": "interrupt_before human_approval",
-    "locale": "zh-CN",
-    "output": "AuroraRecon-sequence.html",
-    "repository": {
-      "host": "github",
-      "owner": "blkheadfish",
-      "name": "AuroraRecon"
-    },
+    "title": "AuroraRecon 阶段推进",
+    "subtitle": "approve → gate → tool → graph",
     "viewBox": [
-      960,
-      720
+      1080,
+      580
     ],
-    "column_fit": "spread"
+    "column_fit": "spread",
+    "animation": "trace",
+    "output": "sequence.html",
+    "locale": "zh-CN",
+    "quality_profile": "showcase"
   },
   "participants": [
-    {
-      "id": "op",
-      "type": "frontend",
-      "label": "Operator"
-    },
     {
       "id": "api",
       "type": "backend",
       "label": "API"
     },
     {
-      "id": "g",
+      "id": "orch",
       "type": "backend",
-      "label": "LangGraph"
+      "label": "Orch"
     },
     {
-      "id": "cp",
+      "id": "sup",
+      "type": "backend",
+      "label": "Supervisor"
+    },
+    {
+      "id": "gate",
+      "type": "security",
+      "label": "Gate"
+    },
+    {
+      "id": "tb",
+      "type": "backend",
+      "label": "Tools"
+    },
+    {
+      "id": "wm",
       "type": "database",
-      "label": "Checkpointer"
-    },
-    {
-      "id": "ex",
-      "type": "backend",
-      "label": "Exploit node"
+      "label": "Graph"
     }
   ],
   "messages": [
     {
-      "from": "op",
-      "to": "api",
-      "y": 180,
-      "label": "创建任务"
-    },
-    {
+      "id": "m0",
       "from": "api",
-      "to": "g",
-      "y": 230,
-      "label": "ainvoke"
+      "to": "orch",
+      "y": 160,
+      "label": "create task"
     },
     {
-      "from": "g",
-      "to": "cp",
-      "y": 280,
-      "label": "persist pre-approval"
+      "id": "m1",
+      "from": "orch",
+      "to": "sup",
+      "y": 202,
+      "label": "enter phase"
     },
     {
-      "from": "g",
+      "id": "m2",
+      "from": "sup",
+      "to": "gate",
+      "y": 245,
+      "label": "pre-exec"
+    },
+    {
+      "id": "m3",
+      "from": "gate",
+      "to": "tb",
+      "y": 288,
+      "label": "allow"
+    },
+    {
+      "id": "m4",
+      "from": "tb",
+      "to": "sup",
+      "y": 331,
+      "label": "result"
+    },
+    {
+      "id": "m5",
+      "from": "sup",
+      "to": "wm",
+      "y": 374,
+      "label": "write node"
+    },
+    {
+      "id": "m6",
+      "from": "sup",
+      "to": "orch",
+      "y": 417,
+      "label": "phase done"
+    },
+    {
+      "id": "m7",
+      "from": "orch",
       "to": "api",
-      "y": 330,
-      "label": "interrupt awaiting_approval",
-      "variant": "security"
-    },
-    {
-      "from": "api",
-      "to": "op",
-      "y": 380,
-      "label": "审批卡片",
-      "variant": "return"
-    },
-    {
-      "from": "op",
-      "to": "api",
-      "y": 430,
-      "label": "POST /approve"
-    },
-    {
-      "from": "api",
-      "to": "g",
-      "y": 480,
-      "label": "resume Command"
-    },
-    {
-      "from": "g",
-      "to": "ex",
-      "y": 530,
-      "label": "foothold_attempt",
-      "variant": "emphasis"
+      "y": 460,
+      "label": "status"
     }
-  ]
+  ],
+  "schema_version": 1,
+  "diagram_type": "sequence"
 }

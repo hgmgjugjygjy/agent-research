@@ -3,18 +3,15 @@
   "diagram_type": "dataflow",
   "meta": {
     "title": "ARTEX 上下文与记忆流",
-    "subtitle": "聊天压缩 + 冷图 digest",
+    "subtitle": "activity → graph → digest → planner",
     "locale": "zh-CN",
-    "output": "ARTEX-dataflow.html",
-    "repository": {
-      "host": "github",
-      "owner": "RuoJi6",
-      "name": "ARTEX"
-    },
+    "output": "dataflow.html",
     "viewBox": [
-      960,
-      560
-    ]
+      1080,
+      520
+    ],
+    "animation": "trace",
+    "quality_profile": "showcase"
   },
   "stages": [
     {
@@ -34,23 +31,16 @@
     {
       "id": "act",
       "type": "backend",
-      "label": "Worker activity",
+      "label": "Activity",
       "stage": 0,
       "row": 0
     },
     {
       "id": "eg",
       "type": "database",
-      "label": "探索图节点",
+      "label": "ExploreGraph",
       "stage": 1,
       "row": 0
-    },
-    {
-      "id": "ag",
-      "type": "database",
-      "label": "资产图",
-      "stage": 1,
-      "row": 1
     },
     {
       "id": "cold",
@@ -60,51 +50,34 @@
       "row": 0
     },
     {
-      "id": "dig",
-      "type": "database",
-      "label": "Digest body",
-      "stage": 2,
-      "row": 1
-    },
-    {
       "id": "pl",
       "type": "backend",
-      "label": "Planner 态势",
+      "label": "Planner",
       "stage": 3,
       "row": 0
     }
   ],
   "flows": [
     {
+      "id": "f0",
       "from": "act",
       "to": "eg",
-      "label": "yields/facts"
+      "label": "yields",
+      "route": "straight"
     },
     {
-      "from": "act",
-      "to": "ag",
-      "label": "新资产"
-    },
-    {
+      "id": "f1",
       "from": "eg",
       "to": "cold",
-      "label": "冷节点块"
+      "label": "cold",
+      "route": "straight"
     },
     {
+      "id": "f2",
       "from": "cold",
-      "to": "dig",
-      "label": "LLM summary"
-    },
-    {
-      "from": "dig",
       "to": "pl",
-      "label": "快速掌握片区"
-    },
-    {
-      "from": "ag",
-      "to": "pl",
-      "label": "覆盖/范围",
-      "variant": "dashed"
+      "label": "digest",
+      "route": "straight"
     }
   ]
 }

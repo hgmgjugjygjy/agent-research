@@ -1,28 +1,18 @@
 {
-  "schema_version": 1,
-  "diagram_type": "sequence",
   "meta": {
-    "title": "DeepAudit 审计主循环",
-    "subtitle": "Orchestrator ReAct",
-    "locale": "zh-CN",
-    "output": "DeepAudit-sequence.html",
-    "repository": {
-      "host": "github",
-      "owner": "lintsinghua",
-      "name": "DeepAudit"
-    },
+    "title": "DeepAudit 任务编排",
+    "subtitle": "dispatch → tools → compress → persist",
     "viewBox": [
-      960,
-      720
+      1080,
+      580
     ],
-    "column_fit": "spread"
+    "column_fit": "spread",
+    "animation": "trace",
+    "output": "sequence.html",
+    "locale": "zh-CN",
+    "quality_profile": "showcase"
   },
   "participants": [
-    {
-      "id": "user",
-      "type": "frontend",
-      "label": "User"
-    },
     {
       "id": "api",
       "type": "backend",
@@ -31,64 +21,87 @@
     {
       "id": "orch",
       "type": "backend",
-      "label": "Orchestrator"
+      "label": "Orch"
     },
     {
       "id": "ana",
       "type": "backend",
-      "label": "Analysis"
+      "label": "Analyze"
     },
     {
-      "id": "sse",
-      "type": "messagebus",
-      "label": "SSE"
+      "id": "tools",
+      "type": "backend",
+      "label": "Tools"
+    },
+    {
+      "id": "mem",
+      "type": "backend",
+      "label": "Memory"
+    },
+    {
+      "id": "pg",
+      "type": "database",
+      "label": "DB"
     }
   ],
   "messages": [
     {
-      "from": "user",
-      "to": "api",
-      "y": 180,
-      "label": "POST agent-tasks"
-    },
-    {
+      "id": "m0",
       "from": "api",
       "to": "orch",
-      "y": 230,
-      "label": "run"
+      "y": 160,
+      "label": "POST task"
     },
     {
+      "id": "m1",
       "from": "orch",
       "to": "ana",
-      "y": 280,
-      "label": "dispatch_agent"
+      "y": 202,
+      "label": "dispatch"
     },
     {
+      "id": "m2",
+      "from": "ana",
+      "to": "tools",
+      "y": 245,
+      "label": "smart_scan"
+    },
+    {
+      "id": "m3",
+      "from": "tools",
+      "to": "ana",
+      "y": 288,
+      "label": "findings"
+    },
+    {
+      "id": "m4",
       "from": "ana",
       "to": "orch",
-      "y": 330,
-      "label": "TaskHandoff findings",
-      "variant": "return"
+      "y": 331,
+      "label": "done"
     },
     {
+      "id": "m5",
       "from": "orch",
-      "to": "sse",
-      "y": 380,
-      "label": "thinking/tool/finding"
+      "to": "mem",
+      "y": 374,
+      "label": "compress"
     },
     {
-      "from": "sse",
-      "to": "user",
-      "y": 430,
-      "label": "实时 UI",
-      "variant": "dashed"
+      "id": "m6",
+      "from": "orch",
+      "to": "pg",
+      "y": 417,
+      "label": "persist"
     },
     {
+      "id": "m7",
       "from": "orch",
       "to": "api",
-      "y": 480,
-      "label": "finish persist",
-      "variant": "emphasis"
+      "y": 460,
+      "label": "finish"
     }
-  ]
+  ],
+  "schema_version": 1,
+  "diagram_type": "sequence"
 }

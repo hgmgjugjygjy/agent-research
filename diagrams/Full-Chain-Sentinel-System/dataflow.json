@@ -2,92 +2,82 @@
   "schema_version": 1,
   "diagram_type": "dataflow",
   "meta": {
-    "title": "pi 压缩数据流",
-    "subtitle": "threshold / overflow",
+    "title": "Full-Chain 会话压缩",
+    "subtitle": "proj → cut → summary → kept",
     "locale": "zh-CN",
-    "output": "Full-Chain-Sentinel-System-dataflow.html",
-    "repository": {
-      "host": "github",
-      "owner": "zgsfsec",
-      "name": "Full-Chain-Sentinel-System"
-    },
+    "output": "dataflow.html",
     "viewBox": [
-      960,
-      560
-    ]
+      1080,
+      520
+    ],
+    "animation": "trace",
+    "quality_profile": "showcase"
   },
   "stages": [
     {
       "label": "投影"
     },
     {
-      "label": "切分"
+      "label": "裁剪"
     },
     {
       "label": "摘要"
     },
     {
-      "label": "重建"
+      "label": "保留"
     }
   ],
   "nodes": [
     {
       "id": "proj",
-      "type": "database",
-      "label": "Session projection",
+      "type": "backend",
+      "label": "Projection",
       "stage": 0,
       "row": 0
     },
     {
       "id": "cut",
       "type": "backend",
-      "label": "keepRecentTokens cut",
+      "label": "Cut",
       "stage": 1,
       "row": 0
     },
     {
       "id": "sum",
       "type": "backend",
-      "label": "Structured summary",
+      "label": "Summary",
       "stage": 2,
-      "row": 0
-    },
-    {
-      "id": "cmp",
-      "type": "database",
-      "label": "CompactionEntry",
-      "stage": 3,
       "row": 0
     },
     {
       "id": "kept",
       "type": "database",
-      "label": "Kept messages",
+      "label": "Kept",
       "stage": 3,
-      "row": 1
+      "row": 0
     }
   ],
   "flows": [
     {
+      "id": "f0",
       "from": "proj",
       "to": "cut",
-      "label": "超 reserve 阈值"
+      "label": "overflow",
+      "route": "straight"
     },
     {
+      "id": "f1",
       "from": "cut",
       "to": "sum",
-      "label": "messagesToSummarize"
+      "label": "summarize",
+      "route": "straight"
     },
     {
+      "id": "f2",
       "from": "sum",
-      "to": "cmp",
-      "label": "append entry"
-    },
-    {
-      "from": "cut",
       "to": "kept",
-      "label": "from firstKeptEntryId",
-      "variant": "dashed"
+      "label": "save",
+      "route": "straight"
     }
   ]
 }

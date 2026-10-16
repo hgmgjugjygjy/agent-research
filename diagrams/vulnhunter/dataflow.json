@@ -2,32 +2,29 @@
   "schema_version": 1,
   "diagram_type": "dataflow",
   "meta": {
-    "title": "VulnHunter 质量数据流",
-    "subtitle": "候选→证伪→复核",
+    "title": "VulnHunter 质量漏斗",
+    "subtitle": "cand → falsify → confirm → verify",
     "locale": "zh-CN",
-    "output": "vulnhunter-dataflow.html",
-    "repository": {
-      "host": "github",
-      "owner": "capitalone",
-      "name": "VulnHunter"
-    },
+    "output": "dataflow.html",
     "viewBox": [
-      960,
-      560
-    ]
+      1080,
+      520
+    ],
+    "animation": "trace",
+    "quality_profile": "showcase"
   },
   "stages": [
     {
-      "label": "发现"
+      "label": "候选"
     },
     {
       "label": "证伪"
     },
     {
-      "label": "修复"
+      "label": "确认"
     },
     {
-      "label": "复核"
+      "label": "验证"
     }
   ],
   "nodes": [
@@ -41,53 +38,46 @@
     {
       "id": "fal",
       "type": "security",
-      "label": "Adversarial Disprove",
+      "label": "Falsify",
       "stage": 1,
       "row": 0
     },
     {
       "id": "conf",
       "type": "database",
-      "label": "Confirmed+PoC",
-      "stage": 1,
-      "row": 1
-    },
-    {
-      "id": "fixn",
-      "type": "backend",
-      "label": "Fix skill",
+      "label": "Confirmed",
       "stage": 2,
       "row": 0
     },
     {
       "id": "ver",
       "type": "security",
-      "label": "Verify RO agent",
+      "label": "Verify",
       "stage": 3,
       "row": 0
     }
   ],
   "flows": [
     {
+      "id": "f0",
       "from": "cand",
       "to": "fal",
-      "label": "weak args"
+      "label": "weak",
+      "route": "straight"
     },
     {
+      "id": "f1",
       "from": "fal",
       "to": "conf",
-      "label": "survivors ~50%"
+      "label": "survive",
+      "route": "straight"
     },
     {
+      "id": "f2",
       "from": "conf",
-      "to": "fixn",
-      "label": "RED/GREEN"
-    },
-    {
-      "from": "fixn",
       "to": "ver",
-      "label": "per-finding verdict",
-      "variant": "security"
+      "label": "judge",
+      "route": "straight"
     }
   ]
 }
