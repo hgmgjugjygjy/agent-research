@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "DeepAudit 审计主循环",
+    "subtitle": "Orchestrator ReAct",
+    "locale": "zh-CN",
+    "output": "DeepAudit-sequence.html",
+    "repository": {
+      "host": "github",
+      "owner": "lintsinghua",
+      "name": "DeepAudit"
+    },
+    "viewBox": [
+      960,
+      720
+    ],
+    "column_fit": "spread"
+  },
+  "participants": [
+    {
+      "id": "user",
+      "type": "frontend",
+      "label": "User"
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "API"
+    },
+    {
+      "id": "orch",
+      "type": "backend",
+      "label": "Orchestrator"
+    },
+    {
+      "id": "ana",
+      "type": "backend",
+      "label": "Analysis"
+    },
+    {
+      "id": "sse",
+      "type": "messagebus",
+      "label": "SSE"
+    }
+  ],
+  "messages": [
+    {
+      "from": "user",
+      "to": "api",
+      "y": 180,
+      "label": "POST agent-tasks"
+    },
+    {
+      "from": "api",
+      "to": "orch",
+      "y": 230,
+      "label": "run"
+    },
+    {
+      "from": "orch",
+      "to": "ana",
+      "y": 280,
+      "label": "dispatch_agent"
+    },
+    {
+      "from": "ana",
+      "to": "orch",
+      "y": 330,
+      "label": "TaskHandoff findings",
+      "variant": "return"
+    },
+    {
+      "from": "orch",
+      "to": "sse",
+      "y": 380,
+      "label": "thinking/tool/finding"
+    },
+    {
+      "from": "sse",
+      "to": "user",
+      "y": 430,
+      "label": "实时 UI",
+      "variant": "dashed"
+    },
+    {
+      "from": "orch",
+      "to": "api",
+      "y": 480,
+      "label": "finish persist",
+      "variant": "emphasis"
+    }
+  ]
+}

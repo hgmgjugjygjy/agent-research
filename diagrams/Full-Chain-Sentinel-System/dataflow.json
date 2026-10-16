@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "pi 压缩数据流",
+    "subtitle": "threshold / overflow",
+    "locale": "zh-CN",
+    "output": "Full-Chain-Sentinel-System-dataflow.html",
+    "repository": {
+      "host": "github",
+      "owner": "zgsfsec",
+      "name": "Full-Chain-Sentinel-System"
+    },
+    "viewBox": [
+      960,
+      560
+    ]
+  },
+  "stages": [
+    {
+      "label": "投影"
+    },
+    {
+      "label": "切分"
+    },
+    {
+      "label": "摘要"
+    },
+    {
+      "label": "重建"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "proj",
+      "type": "database",
+      "label": "Session projection",
+      "stage": 0,
+      "row": 0
+    },
+    {
+      "id": "cut",
+      "type": "backend",
+      "label": "keepRecentTokens cut",
+      "stage": 1,
+      "row": 0
+    },
+    {
+      "id": "sum",
+      "type": "backend",
+      "label": "Structured summary",
+      "stage": 2,
+      "row": 0
+    },
+    {
+      "id": "cmp",
+      "type": "database",
+      "label": "CompactionEntry",
+      "stage": 3,
+      "row": 0
+    },
+    {
+      "id": "kept",
+      "type": "database",
+      "label": "Kept messages",
+      "stage": 3,
+      "row": 1
+    }
+  ],
+  "flows": [
+    {
+      "from": "proj",
+      "to": "cut",
+      "label": "超 reserve 阈值"
+    },
+    {
+      "from": "cut",
+      "to": "sum",
+      "label": "messagesToSummarize"
+    },
+    {
+      "from": "sum",
+      "to": "cmp",
+      "label": "append entry"
+    },
+    {
+      "from": "cut",
+      "to": "kept",
+      "label": "from firstKeptEntryId",
+      "variant": "dashed"
+    }
+  ]
+}

@@ -1,0 +1,161 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "全链哨兵架构",
+    "subtitle": "pi harness + Web + Kali",
+    "locale": "zh-CN",
+    "output": "Full-Chain-Sentinel-System-architecture.html",
+    "repository": {
+      "host": "github",
+      "owner": "zgsfsec",
+      "name": "Full-Chain-Sentinel-System"
+    },
+    "viewBox": [
+      960,
+      640
+    ],
+    "legend": {
+      "mode": "auto"
+    }
+  },
+  "layout": {
+    "mode": "grid",
+    "cols": 4,
+    "gapX": 28,
+    "gapY": 24,
+    "cellW": 160,
+    "cellH": 72
+  },
+  "components": [
+    {
+      "id": "web",
+      "type": "frontend",
+      "label": "Web Console",
+      "sublabel": "packages/web",
+      "row": 0,
+      "col": 0
+    },
+    {
+      "id": "ca",
+      "type": "backend",
+      "label": "coding-agent",
+      "row": 0,
+      "col": 1
+    },
+    {
+      "id": "har",
+      "type": "backend",
+      "label": "AgentHarness",
+      "sublabel": "pi-agent-core",
+      "row": 1,
+      "col": 1
+    },
+    {
+      "id": "comp",
+      "type": "backend",
+      "label": "Compaction",
+      "row": 1,
+      "col": 2
+    },
+    {
+      "id": "gate",
+      "type": "security",
+      "label": "Approval Modes",
+      "sublabel": "人工/自动/AI",
+      "row": 2,
+      "col": 1
+    },
+    {
+      "id": "kali",
+      "type": "cloud",
+      "label": "Kali Container",
+      "row": 2,
+      "col": 2
+    },
+    {
+      "id": "sess",
+      "type": "database",
+      "label": "JSONL Session Tree",
+      "row": 3,
+      "col": 1
+    },
+    {
+      "id": "llm",
+      "type": "external",
+      "label": "OpenAI-compatible",
+      "row": 0,
+      "col": 3
+    },
+    {
+      "id": "droid",
+      "type": "external",
+      "label": "DroidBridge",
+      "row": 2,
+      "col": 3
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "pi Upstream Core",
+      "wraps": [
+        "ca",
+        "har",
+        "comp",
+        "sess"
+      ]
+    },
+    {
+      "kind": "security-group",
+      "label": "Command Gate",
+      "wraps": [
+        "gate",
+        "kali"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "from": "web",
+      "to": "ca",
+      "label": "WS prompt"
+    },
+    {
+      "from": "ca",
+      "to": "har",
+      "label": "lane ops"
+    },
+    {
+      "from": "har",
+      "to": "comp",
+      "label": "auto compact"
+    },
+    {
+      "from": "har",
+      "to": "gate",
+      "label": "bash tool"
+    },
+    {
+      "from": "gate",
+      "to": "kali",
+      "label": "docker exec"
+    },
+    {
+      "from": "har",
+      "to": "sess",
+      "label": "append entries"
+    },
+    {
+      "from": "har",
+      "to": "llm",
+      "label": "stream"
+    },
+    {
+      "from": "web",
+      "to": "droid",
+      "label": "安卓工具",
+      "variant": "dashed"
+    }
+  ]
+}

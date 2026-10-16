@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "Strix 会话压缩数据流",
+    "subtitle": "overflow → checkpoint + recent",
+    "locale": "zh-CN",
+    "output": "strix-dataflow.html",
+    "repository": {
+      "host": "github",
+      "owner": "usestrix",
+      "name": "strix"
+    },
+    "viewBox": [
+      960,
+      560
+    ]
+  },
+  "stages": [
+    {
+      "label": "会话"
+    },
+    {
+      "label": "计量"
+    },
+    {
+      "label": "摘要"
+    },
+    {
+      "label": "重写"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "sess",
+      "type": "database",
+      "label": "Session items",
+      "stage": 0,
+      "row": 0
+    },
+    {
+      "id": "budget",
+      "type": "backend",
+      "label": "Token budget",
+      "stage": 1,
+      "row": 0
+    },
+    {
+      "id": "sum",
+      "type": "backend",
+      "label": "Security summary LLM",
+      "stage": 2,
+      "row": 0
+    },
+    {
+      "id": "ckpt",
+      "type": "database",
+      "label": "conversation-checkpoint",
+      "stage": 3,
+      "row": 0
+    },
+    {
+      "id": "recent",
+      "type": "database",
+      "label": "Recent turns",
+      "stage": 3,
+      "row": 1
+    }
+  ],
+  "flows": [
+    {
+      "from": "sess",
+      "to": "budget",
+      "label": "count_tokens"
+    },
+    {
+      "from": "budget",
+      "to": "sum",
+      "label": "head 超阈"
+    },
+    {
+      "from": "sum",
+      "to": "ckpt",
+      "label": "结构化摘要",
+      "classification": "security-sensitive"
+    },
+    {
+      "from": "sess",
+      "to": "recent",
+      "label": "keep_tokens 尾部",
+      "variant": "dashed"
+    }
+  ]
+}

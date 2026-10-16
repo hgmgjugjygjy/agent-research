@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "AuroraRecon 系统架构",
+    "subtitle": "LangGraph + 世界模型 + 分层门禁",
+    "locale": "zh-CN",
+    "output": "AuroraRecon-architecture.html",
+    "repository": {
+      "host": "github",
+      "owner": "blkheadfish",
+      "name": "AuroraRecon"
+    },
+    "viewBox": [
+      960,
+      640
+    ],
+    "legend": {
+      "mode": "auto"
+    }
+  },
+  "layout": {
+    "mode": "grid",
+    "cols": 4,
+    "gapX": 28,
+    "gapY": 24,
+    "cellW": 160,
+    "cellH": 72
+  },
+  "components": [
+    {
+      "id": "fe",
+      "type": "frontend",
+      "label": "Vue3 Console",
+      "row": 0,
+      "col": 0
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "FastAPI",
+      "sublabel": "WS Redis Stream",
+      "row": 0,
+      "col": 1
+    },
+    {
+      "id": "orch",
+      "type": "backend",
+      "label": "Orchestrator",
+      "sublabel": "linear/feedback/supervisor",
+      "row": 1,
+      "col": 1
+    },
+    {
+      "id": "sup",
+      "type": "backend",
+      "label": "Supervisor/Agents",
+      "row": 1,
+      "col": 2
+    },
+    {
+      "id": "wm",
+      "type": "database",
+      "label": "AttackGraph",
+      "sublabel": "世界模型",
+      "row": 2,
+      "col": 2
+    },
+    {
+      "id": "gate",
+      "type": "security",
+      "label": "Safety Stack",
+      "sublabel": "scope/YAML/irreversible",
+      "row": 2,
+      "col": 1
+    },
+    {
+      "id": "tb",
+      "type": "cloud",
+      "label": "Toolbox Container",
+      "row": 1,
+      "col": 3
+    },
+    {
+      "id": "pg",
+      "type": "database",
+      "label": "Postgres+CP",
+      "row": 3,
+      "col": 1
+    },
+    {
+      "id": "llm",
+      "type": "external",
+      "label": "LLM API",
+      "row": 0,
+      "col": 3
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "LangGraph Runtime",
+      "wraps": [
+        "orch",
+        "sup",
+        "wm"
+      ]
+    },
+    {
+      "kind": "security-group",
+      "label": "Policy Gates",
+      "wraps": [
+        "gate"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "from": "fe",
+      "to": "api",
+      "label": "REST/WS"
+    },
+    {
+      "from": "api",
+      "to": "orch",
+      "label": "run/resume/approve"
+    },
+    {
+      "from": "orch",
+      "to": "sup",
+      "label": "route phase"
+    },
+    {
+      "from": "sup",
+      "to": "gate",
+      "label": "pre-exec check"
+    },
+    {
+      "from": "gate",
+      "to": "tb",
+      "label": "in-scope cmds"
+    },
+    {
+      "from": "sup",
+      "to": "wm",
+      "label": "read/write graph"
+    },
+    {
+      "from": "orch",
+      "to": "pg",
+      "label": "checkpointer"
+    },
+    {
+      "from": "sup",
+      "to": "llm",
+      "label": "ReAct/decision"
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Aurora 审批中断恢复",
+    "subtitle": "interrupt_before human_approval",
+    "locale": "zh-CN",
+    "output": "AuroraRecon-sequence.html",
+    "repository": {
+      "host": "github",
+      "owner": "blkheadfish",
+      "name": "AuroraRecon"
+    },
+    "viewBox": [
+      960,
+      720
+    ],
+    "column_fit": "spread"
+  },
+  "participants": [
+    {
+      "id": "op",
+      "type": "frontend",
+      "label": "Operator"
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "API"
+    },
+    {
+      "id": "g",
+      "type": "backend",
+      "label": "LangGraph"
+    },
+    {
+      "id": "cp",
+      "type": "database",
+      "label": "Checkpointer"
+    },
+    {
+      "id": "ex",
+      "type": "backend",
+      "label": "Exploit node"
+    }
+  ],
+  "messages": [
+    {
+      "from": "op",
+      "to": "api",
+      "y": 180,
+      "label": "创建任务"
+    },
+    {
+      "from": "api",
+      "to": "g",
+      "y": 230,
+      "label": "ainvoke"
+    },
+    {
+      "from": "g",
+      "to": "cp",
+      "y": 280,
+      "label": "persist pre-approval"
+    },
+    {
+      "from": "g",
+      "to": "api",
+      "y": 330,
+      "label": "interrupt awaiting_approval",
+      "variant": "security"
+    },
+    {
+      "from": "api",
+      "to": "op",
+      "y": 380,
+      "label": "审批卡片",
+      "variant": "return"
+    },
+    {
+      "from": "op",
+      "to": "api",
+      "y": 430,
+      "label": "POST /approve"
+    },
+    {
+      "from": "api",
+      "to": "g",
+      "y": 480,
+      "label": "resume Command"
+    },
+    {
+      "from": "g",
+      "to": "ex",
+      "y": 530,
+      "label": "foothold_attempt",
+      "variant": "emphasis"
+    }
+  ]
+}

@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "VulnHunter 阶段调度",
+    "subtitle": "编排器不持有 findings",
+    "locale": "zh-CN",
+    "output": "vulnhunter-sequence.html",
+    "repository": {
+      "host": "github",
+      "owner": "capitalone",
+      "name": "VulnHunter"
+    },
+    "viewBox": [
+      960,
+      720
+    ],
+    "column_fit": "spread"
+  },
+  "participants": [
+    {
+      "id": "orch",
+      "type": "backend",
+      "label": "SKILL Orchestrator"
+    },
+    {
+      "id": "p1",
+      "type": "backend",
+      "label": "Phase1 Recon"
+    },
+    {
+      "id": "p2",
+      "type": "backend",
+      "label": "Phase2 Hunt"
+    },
+    {
+      "id": "p2b",
+      "type": "security",
+      "label": "Phase2b Falsify"
+    },
+    {
+      "id": "p3",
+      "type": "backend",
+      "label": "Phase3 PoC"
+    },
+    {
+      "id": "fs",
+      "type": "database",
+      "label": "RESULTS FS"
+    }
+  ],
+  "messages": [
+    {
+      "from": "orch",
+      "to": "p1",
+      "y": 180,
+      "label": "spawn subagent"
+    },
+    {
+      "from": "p1",
+      "to": "fs",
+      "y": 230,
+      "label": "inventory files"
+    },
+    {
+      "from": "orch",
+      "to": "p2",
+      "y": 280,
+      "label": "parallel class agents"
+    },
+    {
+      "from": "p2",
+      "to": "fs",
+      "y": 330,
+      "label": "candidates"
+    },
+    {
+      "from": "orch",
+      "to": "p2b",
+      "y": 380,
+      "label": "disprove weak",
+      "variant": "security"
+    },
+    {
+      "from": "p2b",
+      "to": "fs",
+      "y": 430,
+      "label": "survivors"
+    },
+    {
+      "from": "orch",
+      "to": "p3",
+      "y": 480,
+      "label": "reproduce"
+    },
+    {
+      "from": "orch",
+      "to": "fs",
+      "y": 530,
+      "label": "compile report",
+      "variant": "emphasis"
+    }
+  ]
+}

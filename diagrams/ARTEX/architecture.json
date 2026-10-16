@@ -1,0 +1,175 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "ARTEX 系统架构",
+    "subtitle": "Planner–Worker + 双图 + Guard",
+    "locale": "zh-CN",
+    "output": "ARTEX-architecture.html",
+    "repository": {
+      "host": "github",
+      "owner": "RuoJi6",
+      "name": "ARTEX"
+    },
+    "viewBox": [
+      960,
+      640
+    ],
+    "legend": {
+      "mode": "auto"
+    }
+  },
+  "layout": {
+    "mode": "grid",
+    "cols": 4,
+    "gapX": 28,
+    "gapY": 24,
+    "cellW": 160,
+    "cellH": 72
+  },
+  "components": [
+    {
+      "id": "ui",
+      "type": "frontend",
+      "label": "Next.js UI",
+      "sublabel": "任务/审批/覆盖图",
+      "row": 0,
+      "col": 0
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "Go server",
+      "sublabel": "REST+SSE",
+      "row": 0,
+      "col": 1
+    },
+    {
+      "id": "engine",
+      "type": "backend",
+      "label": "Engine",
+      "sublabel": "plannerLoop×workers",
+      "row": 1,
+      "col": 1
+    },
+    {
+      "id": "planner",
+      "type": "backend",
+      "label": "Planner",
+      "sublabel": "意图生成+todolist",
+      "row": 1,
+      "col": 2
+    },
+    {
+      "id": "worker",
+      "type": "backend",
+      "label": "Workers",
+      "sublabel": "领意图执行",
+      "row": 2,
+      "col": 2
+    },
+    {
+      "id": "guard",
+      "type": "security",
+      "label": "Guard/Intercept",
+      "sublabel": "PreToolUse ask",
+      "row": 2,
+      "col": 1
+    },
+    {
+      "id": "pg",
+      "type": "database",
+      "label": "PostgreSQL",
+      "sublabel": "资产图+探索图",
+      "row": 3,
+      "col": 1
+    },
+    {
+      "id": "llm",
+      "type": "external",
+      "label": "LLM Provider",
+      "row": 1,
+      "col": 3
+    },
+    {
+      "id": "proxy",
+      "type": "security",
+      "label": "MITM Proxy",
+      "sublabel": "流量留痕",
+      "row": 2,
+      "col": 3
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Agent Runtime (norma)",
+      "wraps": [
+        "planner",
+        "worker",
+        "guard"
+      ]
+    },
+    {
+      "kind": "security-group",
+      "label": "Safety Boundary",
+      "wraps": [
+        "guard",
+        "proxy"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "from": "ui",
+      "to": "api",
+      "label": "HTTP/SSE"
+    },
+    {
+      "from": "api",
+      "to": "engine",
+      "label": "任务生命周期"
+    },
+    {
+      "from": "engine",
+      "to": "planner",
+      "label": "唤醒"
+    },
+    {
+      "from": "planner",
+      "to": "worker",
+      "label": "意图 frontier"
+    },
+    {
+      "from": "worker",
+      "to": "guard",
+      "label": "工具调用"
+    },
+    {
+      "from": "guard",
+      "to": "proxy",
+      "label": "放行后执行",
+      "variant": "dashed"
+    },
+    {
+      "from": "planner",
+      "to": "llm",
+      "label": "Complete"
+    },
+    {
+      "from": "worker",
+      "to": "llm",
+      "label": "Complete"
+    },
+    {
+      "from": "planner",
+      "to": "pg",
+      "label": "读写双图"
+    },
+    {
+      "from": "worker",
+      "to": "pg",
+      "label": "写 fact/finding"
+    }
+  ]
+}

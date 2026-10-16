@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "DeepAudit 上下文压缩",
+    "subtitle": "100k 阈值摘要",
+    "locale": "zh-CN",
+    "output": "DeepAudit-dataflow.html",
+    "repository": {
+      "host": "github",
+      "owner": "lintsinghua",
+      "name": "DeepAudit"
+    },
+    "viewBox": [
+      960,
+      560
+    ]
+  },
+  "stages": [
+    {
+      "label": "消息"
+    },
+    {
+      "label": "计量"
+    },
+    {
+      "label": "摘要"
+    },
+    {
+      "label": "继续推理"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "msg",
+      "type": "database",
+      "label": "messages[]",
+      "stage": 0,
+      "row": 0
+    },
+    {
+      "id": "est",
+      "type": "backend",
+      "label": "TokenEstimator",
+      "stage": 1,
+      "row": 0
+    },
+    {
+      "id": "cmp",
+      "type": "backend",
+      "label": "MemoryCompressor",
+      "stage": 2,
+      "row": 0
+    },
+    {
+      "id": "sum",
+      "type": "database",
+      "label": "context_summary",
+      "stage": 2,
+      "row": 1
+    },
+    {
+      "id": "llm",
+      "type": "backend",
+      "label": "stream_llm_call",
+      "stage": 3,
+      "row": 0
+    }
+  ],
+  "flows": [
+    {
+      "from": "msg",
+      "to": "est",
+      "label": "count"
+    },
+    {
+      "from": "est",
+      "to": "cmp",
+      "label": ">90% of 100k"
+    },
+    {
+      "from": "cmp",
+      "to": "sum",
+      "label": "保留关键发现/工具"
+    },
+    {
+      "from": "sum",
+      "to": "llm",
+      "label": "system+summary+recent"
+    },
+    {
+      "from": "msg",
+      "to": "llm",
+      "label": "近15条原文",
+      "variant": "dashed"
+    }
+  ]
+}

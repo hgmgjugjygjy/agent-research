@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "Aurora 记忆与门禁数据流",
+    "subtitle": "prior + scope + decisions",
+    "locale": "zh-CN",
+    "output": "AuroraRecon-dataflow.html",
+    "repository": {
+      "host": "github",
+      "owner": "blkheadfish",
+      "name": "AuroraRecon"
+    },
+    "viewBox": [
+      960,
+      560
+    ]
+  },
+  "stages": [
+    {
+      "label": "历史"
+    },
+    {
+      "label": "注入"
+    },
+    {
+      "label": "决策"
+    },
+    {
+      "label": "执行门"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hist",
+      "type": "database",
+      "label": "历史 TaskState",
+      "stage": 0,
+      "row": 0
+    },
+    {
+      "id": "prior",
+      "type": "backend",
+      "label": "PriorIntel",
+      "stage": 1,
+      "row": 0
+    },
+    {
+      "id": "wm",
+      "type": "database",
+      "label": "AttackGraph prior节点",
+      "stage": 1,
+      "row": 1
+    },
+    {
+      "id": "dec",
+      "type": "backend",
+      "label": "阶段决策",
+      "stage": 2,
+      "row": 0
+    },
+    {
+      "id": "scope",
+      "type": "security",
+      "label": "scope_guard",
+      "stage": 3,
+      "row": 0
+    },
+    {
+      "id": "safe",
+      "type": "security",
+      "label": "safety_gate",
+      "stage": 3,
+      "row": 1
+    }
+  ],
+  "flows": [
+    {
+      "from": "hist",
+      "to": "prior",
+      "label": "extract (无明文密码)"
+    },
+    {
+      "from": "prior",
+      "to": "wm",
+      "label": "source=prior"
+    },
+    {
+      "from": "wm",
+      "to": "dec",
+      "label": "frontier/chains"
+    },
+    {
+      "from": "dec",
+      "to": "scope",
+      "label": "命令目标"
+    },
+    {
+      "from": "dec",
+      "to": "safe",
+      "label": "意图/CIDR",
+      "variant": "security"
+    }
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "全链哨兵工具审批",
+    "subtitle": "三档模式",
+    "locale": "zh-CN",
+    "output": "Full-Chain-Sentinel-System-sequence.html",
+    "repository": {
+      "host": "github",
+      "owner": "zgsfsec",
+      "name": "Full-Chain-Sentinel-System"
+    },
+    "viewBox": [
+      960,
+      720
+    ],
+    "column_fit": "spread"
+  },
+  "participants": [
+    {
+      "id": "user",
+      "type": "frontend",
+      "label": "Operator"
+    },
+    {
+      "id": "web",
+      "type": "frontend",
+      "label": "Web"
+    },
+    {
+      "id": "agent",
+      "type": "backend",
+      "label": "Agent"
+    },
+    {
+      "id": "gate",
+      "type": "security",
+      "label": "Approval Gate"
+    },
+    {
+      "id": "box",
+      "type": "cloud",
+      "label": "Kali"
+    }
+  ],
+  "messages": [
+    {
+      "from": "user",
+      "to": "web",
+      "y": 180,
+      "label": "提示/持续目标"
+    },
+    {
+      "from": "web",
+      "to": "agent",
+      "y": 230,
+      "label": "run turn"
+    },
+    {
+      "from": "agent",
+      "to": "gate",
+      "y": 280,
+      "label": "bash 拟执行"
+    },
+    {
+      "from": "gate",
+      "to": "user",
+      "y": 330,
+      "label": "审批卡(默认模式)",
+      "variant": "security"
+    },
+    {
+      "from": "user",
+      "to": "gate",
+      "y": 380,
+      "label": "放行/编辑/拒绝"
+    },
+    {
+      "from": "gate",
+      "to": "box",
+      "y": 430,
+      "label": "docker exec",
+      "variant": "emphasis"
+    },
+    {
+      "from": "box",
+      "to": "agent",
+      "y": 480,
+      "label": "stdout",
+      "variant": "return"
+    }
+  ]
+}

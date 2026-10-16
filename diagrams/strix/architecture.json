@@ -1,0 +1,158 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Strix 系统架构",
+    "subtitle": "Graph of Agents + Sandbox",
+    "locale": "zh-CN",
+    "output": "strix-architecture.html",
+    "repository": {
+      "host": "github",
+      "owner": "usestrix",
+      "name": "strix"
+    },
+    "viewBox": [
+      960,
+      640
+    ],
+    "legend": {
+      "mode": "auto"
+    }
+  },
+  "layout": {
+    "mode": "grid",
+    "cols": 4,
+    "gapX": 28,
+    "gapY": 24,
+    "cellW": 160,
+    "cellH": 72
+  },
+  "components": [
+    {
+      "id": "cli",
+      "type": "frontend",
+      "label": "CLI/TUI/Viewer",
+      "row": 0,
+      "col": 0
+    },
+    {
+      "id": "runner",
+      "type": "backend",
+      "label": "Scan Runner",
+      "row": 0,
+      "col": 1
+    },
+    {
+      "id": "coord",
+      "type": "backend",
+      "label": "AgentCoordinator",
+      "sublabel": "树/邮箱/预算",
+      "row": 1,
+      "col": 1
+    },
+    {
+      "id": "root",
+      "type": "backend",
+      "label": "Root Agent",
+      "row": 1,
+      "col": 2
+    },
+    {
+      "id": "child",
+      "type": "backend",
+      "label": "Child Agents",
+      "row": 2,
+      "col": 2
+    },
+    {
+      "id": "compact",
+      "type": "backend",
+      "label": "Compaction",
+      "row": 2,
+      "col": 1
+    },
+    {
+      "id": "sand",
+      "type": "security",
+      "label": "Docker Sandbox",
+      "row": 1,
+      "col": 3
+    },
+    {
+      "id": "llm",
+      "type": "external",
+      "label": "LiteLLM Models",
+      "row": 0,
+      "col": 3
+    },
+    {
+      "id": "rep",
+      "type": "database",
+      "label": "Run Artifacts",
+      "sublabel": "strix_runs",
+      "row": 3,
+      "col": 1
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Multi-Agent Runtime",
+      "wraps": [
+        "coord",
+        "root",
+        "child",
+        "compact"
+      ]
+    },
+    {
+      "kind": "security-group",
+      "label": "Execution Sandbox",
+      "wraps": [
+        "sand"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "from": "cli",
+      "to": "runner",
+      "label": "strix --target"
+    },
+    {
+      "from": "runner",
+      "to": "coord",
+      "label": "register"
+    },
+    {
+      "from": "coord",
+      "to": "root",
+      "label": "drive"
+    },
+    {
+      "from": "root",
+      "to": "child",
+      "label": "create_agent"
+    },
+    {
+      "from": "root",
+      "to": "compact",
+      "label": "maybe_compact"
+    },
+    {
+      "from": "child",
+      "to": "sand",
+      "label": "tools"
+    },
+    {
+      "from": "root",
+      "to": "llm",
+      "label": "chat"
+    },
+    {
+      "from": "coord",
+      "to": "rep",
+      "label": "snapshot/findings"
+    }
+  ]
+}

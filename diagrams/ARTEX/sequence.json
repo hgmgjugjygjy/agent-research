@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "ARTEX 一轮探索调度",
+    "subtitle": "图变更→规划→执行→写回",
+    "locale": "zh-CN",
+    "output": "ARTEX-sequence.html",
+    "repository": {
+      "host": "github",
+      "owner": "RuoJi6",
+      "name": "ARTEX"
+    },
+    "viewBox": [
+      960,
+      720
+    ],
+    "column_fit": "spread"
+  },
+  "participants": [
+    {
+      "id": "ev",
+      "type": "backend",
+      "label": "图变更"
+    },
+    {
+      "id": "p",
+      "type": "backend",
+      "label": "Planner"
+    },
+    {
+      "id": "fr",
+      "type": "messagebus",
+      "label": "Frontier"
+    },
+    {
+      "id": "w",
+      "type": "backend",
+      "label": "Worker"
+    },
+    {
+      "id": "g",
+      "type": "security",
+      "label": "Guard"
+    },
+    {
+      "id": "db",
+      "type": "database",
+      "label": "双图"
+    }
+  ],
+  "messages": [
+    {
+      "from": "ev",
+      "to": "p",
+      "y": 180,
+      "label": "debounce 唤醒"
+    },
+    {
+      "from": "p",
+      "to": "db",
+      "y": 230,
+      "label": "读态势 + maintain 冷戳"
+    },
+    {
+      "from": "p",
+      "to": "fr",
+      "y": 280,
+      "label": "派 0..N 意图"
+    },
+    {
+      "from": "w",
+      "to": "fr",
+      "y": 330,
+      "label": "claimNext"
+    },
+    {
+      "from": "w",
+      "to": "g",
+      "y": 380,
+      "label": "PreToolUse"
+    },
+    {
+      "from": "g",
+      "to": "w",
+      "y": 430,
+      "label": "allow/ask/deny",
+      "variant": "return"
+    },
+    {
+      "from": "w",
+      "to": "db",
+      "y": 480,
+      "label": "写 fact/asset/finding"
+    },
+    {
+      "from": "db",
+      "to": "ev",
+      "y": 530,
+      "label": "图变更",
+      "variant": "dashed"
+    }
+  ]
+}

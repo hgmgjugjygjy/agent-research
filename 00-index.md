@@ -1,0 +1,60 @@
+# 智能体调度平台 · 开源竞品架构调研索引
+
+**文档版本**：2026-10-16（Asia/Shanghai）  
+**目标**：为自建「漏洞扫描 / 挖掘」智能体调度平台提供架构选型材料。  
+**范围**：调度管理、上下文压缩、门限审核、技术栈；**不含** exploit / PoC 利用步骤。  
+**交付仓**：`vevenlcf2/agent-research`（由父代理合入；本工作区不 push）。
+
+---
+
+## 结论先行（选型建议）
+
+1. **编排层选 LangGraph（战役状态机 + interrupt HITL）**，不要用纯 LangChain Agent 硬撑多阶段渗透流水线。AuroraRecon 是最贴近的开源样板。  
+2. **会话执行层参考 pi（或 dsh）**：工业级 compaction、会话树审计、扩展缝；Full-Chain-Sentinel 已验证「pi + 渗透壳」路径。  
+3. **记忆层抄 ARTEX 双图思想**（资产真值图 ∪ 探索血缘图 + 冷节点 digest），解决长程任务上下文爆炸。  
+4. **门禁层以 Aurora 四件套为基线**：runtime scope → YAML safety → irreversible 分级 → autonomy 档位；审批默认 fail-closed（警惕 Sentinel AI 审批 fail-open）。  
+5. **质量子系统独立借鉴 VulnHunter**：阶段隔离编排器上下文 + adversarial falsify + 只读 Verify Agent。  
+
+**不建议**：整仓 fork AGPL 项目（ARTEX/DeepAudit）作内部闭源内核；不建议以 Strix Cloud 产品闭环替代自建控制面。
+
+---
+
+## 文档目录
+
+| 路径 | 内容 |
+|---|---|
+| [01-competitors/ARTEX.md](01-competitors/ARTEX.md) | Go 双图 Planner–Worker 平台 |
+| [01-competitors/strix.md](01-competitors/strix.md) | 多 Agent 协调器 + 安全压缩 |
+| [01-competitors/AuroraRecon.md](01-competitors/AuroraRecon.md) | LangGraph Kill-Chain + 分层门禁 |
+| [01-competitors/vulnhunter.md](01-competitors/vulnhunter.md) | 白盒 Hunt–Fix–Verify |
+| [01-competitors/Full-Chain-Sentinel-System.md](01-competitors/Full-Chain-Sentinel-System.md) | pi fork 渗透控制台 |
+| [01-competitors/DeepAudit.md](01-competitors/DeepAudit.md) | ReAct 多 Agent 代码审计 |
+| [02-frameworks/pi-dsh-langchain-langgraph.md](02-frameworks/pi-dsh-langchain-langgraph.md) | 框架专章 |
+| [03-comparison-matrix.md](03-comparison-matrix.md) | 对比矩阵 |
+| [04-architecture-research.md](04-architecture-research.md) | **总架构调研文档（可作 README）** |
+| [diagrams/](diagrams/) | 每竞品 Archify JSON IR + mermaid 备用 |
+
+## 各竞品一句话
+
+| 竞品 | 一句话 |
+|---|---|
+| ARTEX | 平台型调度+双图记忆最完整，抄思想不整仓 fork（AGPL）。 |
+| Strix | 多 Agent 协作与安全摘要标杆，门禁偏沙箱预算。 |
+| AuroraRecon | LangGraph+世界模型+分层门禁，自建渗透调度最贴蓝本。 |
+| VulnHunter | 阶段化证伪与独立复核的质量体系范本。 |
+| Full-Chain-Sentinel | 证明 pi harness 可撑渗透控制台；战役编排仍弱。 |
+| DeepAudit | 审计向 Orchestrator 树与压缩/熔断工程化样板。 |
+
+## 公开信息缺口
+
+| 项 | 说明 |
+|---|---|
+| dsh | 仓库与 architecture.md **公开完整**；渗透预制技能少，需自研插件。论文 2608.23953 可作收敛背景。 |
+| Aurora License | README 写 MIT，GitHub `license` 字段空，需法务再核。 |
+| ARTEX norma SDK | 核心 agent 能力在外部 SDK，源码阅读需结合公开 Go 封装层。 |
+| Archify render | 本交付为 **typed JSON IR + mermaid**；本机未装 Archify CLI，**待 Archify render** 出 HTML/SVG。 |
+
+## 证据方法
+
+- 使用 GitHub API：`get_repository` / `get_git_tree` / `get_file_contents`（**未整仓 clone**）  
+- 官方文档与 arXiv 公开论文补充框架层  

@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Strix 子 Agent 协作",
+    "subtitle": "create → work → finish → parent inbox",
+    "locale": "zh-CN",
+    "output": "strix-sequence.html",
+    "repository": {
+      "host": "github",
+      "owner": "usestrix",
+      "name": "strix"
+    },
+    "viewBox": [
+      960,
+      720
+    ],
+    "column_fit": "spread"
+  },
+  "participants": [
+    {
+      "id": "parent",
+      "type": "backend",
+      "label": "Parent"
+    },
+    {
+      "id": "coord",
+      "type": "backend",
+      "label": "Coordinator"
+    },
+    {
+      "id": "child",
+      "type": "backend",
+      "label": "Child"
+    },
+    {
+      "id": "tools",
+      "type": "security",
+      "label": "Sandbox Tools"
+    }
+  ],
+  "messages": [
+    {
+      "from": "parent",
+      "to": "coord",
+      "y": 180,
+      "label": "create_agent"
+    },
+    {
+      "from": "coord",
+      "to": "child",
+      "y": 230,
+      "label": "register+spawn"
+    },
+    {
+      "from": "child",
+      "to": "tools",
+      "y": 280,
+      "label": "执行探测工具"
+    },
+    {
+      "from": "tools",
+      "to": "child",
+      "y": 330,
+      "label": "observation",
+      "variant": "return"
+    },
+    {
+      "from": "child",
+      "to": "coord",
+      "y": 380,
+      "label": "agent_finish report"
+    },
+    {
+      "from": "coord",
+      "to": "parent",
+      "y": 430,
+      "label": "inbox completion",
+      "variant": "emphasis"
+    },
+    {
+      "from": "parent",
+      "to": "coord",
+      "y": 480,
+      "label": "wait_for_agents / continue",
+      "variant": "dashed"
+    }
+  ]
+}
