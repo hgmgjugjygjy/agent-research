@@ -1,18 +1,69 @@
 {
-  "generated_at": "2026-10-16T14:20:00+08:00",
+  "generated_at": "2026-10-16T15:45:00+08:00",
   "repos": {
-    "ARTEX": {"owner":"RuoJi6","repo":"ARTEX","stars":229,"lang":"Go","license":"AGPL-3.0","branch":"main"},
-    "strix": {"owner":"usestrix","repo":"strix","stars":68865,"lang":"Python","license":"Apache-2.0","branch":"main"},
-    "AuroraRecon": {"owner":"blkheadfish","repo":"AuroraRecon","stars":3,"lang":"Python","license":null,"branch":"main"},
-    "VulnHunter": {"owner":"capitalone","repo":"VulnHunter","stars":1105,"lang":"Python","license":"Apache-2.0","branch":"main"},
-    "Full-Chain-Sentinel-System": {"owner":"zgsfsec","repo":"Full-Chain-Sentinel-System","stars":79,"lang":"TypeScript","license":"MIT","branch":"main","note":"pi fork"},
-    "DeepAudit": {"owner":"lintsinghua","repo":"DeepAudit","stars":7168,"lang":"Python","license":"AGPL-3.0","branch":"v3.0.0"}
+    "ARTEX": {
+      "owner": "RuoJi6",
+      "repo": "ARTEX",
+      "stars": 229,
+      "lang": "Go",
+      "license": "AGPL-3.0",
+      "branch": "main"
+    },
+    "strix": {
+      "owner": "usestrix",
+      "repo": "strix",
+      "stars": 68865,
+      "lang": "Python",
+      "license": "Apache-2.0",
+      "branch": "main"
+    },
+    "AuroraRecon": {
+      "owner": "blkheadfish",
+      "repo": "AuroraRecon",
+      "stars": 3,
+      "lang": "Python",
+      "license": null,
+      "branch": "main"
+    },
+    "VulnHunter": {
+      "owner": "Clouditera",
+      "repo": "VulnHunter",
+      "stars": 78,
+      "lang": "TypeScript",
+      "license": "Apache-2.0+additional (open-core; package.json also AGPL-3.0-only — verify)",
+      "branch": "main",
+      "engine": "Clouditera/Youngflow",
+      "note": "CORRECTED from capitalone/VulnHunter 2026-10-16"
+    },
+    "Full-Chain-Sentinel-System": {
+      "owner": "zgsfsec",
+      "repo": "Full-Chain-Sentinel-System",
+      "stars": 79,
+      "lang": "TypeScript",
+      "license": "MIT",
+      "branch": "main",
+      "note": "pi fork"
+    },
+    "DeepAudit": {
+      "owner": "lintsinghua",
+      "repo": "DeepAudit",
+      "stars": 7168,
+      "lang": "Python",
+      "license": "AGPL-3.0",
+      "branch": "v3.0.0"
+    }
   },
   "frameworks": {
     "pi": "earendil-works/pi",
     "dsh": "deepseek-ai/deepseek-harness",
     "langchain": "LangChain Inc",
-    "langgraph": "LangChain Inc"
+    "langgraph": "LangChain Inc",
+    "youngflow": "Clouditera/Youngflow"
   },
-  "archify": "18/18 showcase HTML rendered"
+  "archify": "18/18 showcase HTML rendered",
+  "correction": {
+    "vulnhunter_previous": "capitalone/VulnHunter",
+    "vulnhunter_current": "Clouditera/VulnHunter",
+    "yongflow_alias": "Clouditera/Youngflow"
+  }
 }

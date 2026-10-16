@@ -171,4 +171,9 @@ turn/start → claim input → assemble prompt → agent/pre-step
 └─────────────────────────────────────────────┘
 ```
 
-质量子系统可独立借鉴 VulnHunter 的 Hunt→Falsify→Verify；记忆子系统借鉴 ARTEX 双图或 Aurora 世界模型。
+质量/审计流水线可借鉴 **Clouditera VulnHunter**（YoungFlow decide 螺旋 + gate/双向论证）；若直接采用 YAML flow 资产包，编排层可评估 **YoungFlow**（见 `youngflow.md`）作为 LangGraph+pi 胶水，与「纯 LangGraph 自建」二选一。记忆子系统借鉴 ARTEX 双图或 Aurora 世界模型。
+
+
+## 7. YoungFlow 索引
+
+云起无垠 flow runner（口语 yongflow）：专章见 [youngflow.md](./youngflow.md)。VulnHunter 子模块依赖它执行 `flows/vulnforge/flow.audit.yaml`。

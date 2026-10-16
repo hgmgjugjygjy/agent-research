@@ -28,7 +28,7 @@
 | 2 | **会话执行参考 pi（或 dsh）** | 工业 compaction、会话审计、扩展缝；Sentinel 已落地渗透壳 |
 | 3 | **长期记忆用双图/世界模型** | ARTEX 资产图∪探索图+冷 digest；Aurora AttackGraph+prior |
 | 4 | **门禁四层基线** | scope → 确定性规则 → 不可逆分级 → 自治档位（Aurora）；审批 fail-closed |
-| 5 | **质量闭环独立** | VulnHunter Hunt→Falsify→Verify；编排器不持有发现全文 |
+| 5 | **质量/审计流水线** | Clouditera VulnHunter：YoungFlow decide 螺旋 + gate/decision + 双向论证 + sandbox_cfg |
 
 推荐逻辑架构见第 7 节。
 
@@ -64,13 +64,14 @@
 
 **产品启示**：门禁应确定性优先、LLM 不可覆盖；自治≠取消不可逆审批。
 
-### 3.4 VulnHunter — 质量方法论
+### 3.4 VulnHunter（Clouditera）— YoungFlow 审计工作台
 
-- Prompt-only 阶段子 Agent；编排器不分析  
-- Adversarial falsify 淘汰弱候选；独立只读 Verify  
-- Headless Agent + manifest 对接 CI  
+- **纠偏**：非 capitalone Claude Code 三技能；锚点为 Clouditera/VulnHunter  
+- VulnForge `flow.audit.yaml`：**decide** 调度螺旋（onboard→cognize→hunt→verify→可选 POC/EXP→report）  
+- 门禁：`gate.yaml` fail-closed + `decision.yaml` 路由 + 双向论证 + `sandbox_cfg` / SandboxPlane  
+- 引擎：**YoungFlow**（LangGraph + pi）；平台壳 Hono/React/PG/MinIO  
 
-**产品启示**：调度平台应预留「证伪/复核」阶段槽位，而非只追发现数量。
+**产品启示**：可借鉴「YAML flow 资产包 + 文件路由信号 + 沙箱平面代理」；调度内核用 YoungFlow 或自研等价物。
 
 ### 3.5 Full-Chain-Sentinel — pi 渗透壳
 
@@ -114,7 +115,7 @@ C. 会话树型（pi / Sentinel / 部分 Strix 子会话）
 | Transcript 摘要 | Strix / pi / DeepAudit | 通用、实现清 | 摘要丢洞 |
 | 结构化安全摘要模板 | Strix | 强制保留 findings | 依赖摘要模型质量 |
 | 图外置 + 冷压缩 | ARTEX | 长程可扩展 | 工程复杂 |
-| 阶段隔离 + 落盘 | VulnHunter | 防编排污染 | 阶段契约要严 |
+| decide 螺旋 + wiki/todo 落盘 | Clouditera VulnHunter / YoungFlow | 防编排污染、可续跑 | 路由靠 LLM，需 max_loops |
 
 **平台建议**：默认「图/工件外置 + 近端原文 + 安全模板摘要」；禁止静默合并 findings。
 
@@ -130,7 +131,7 @@ L5 质量门（证伪、覆盖率、独立复核）
 L6 运行时沙箱（容器、网络、密钥）
 ```
 
-Aurora 覆盖 L1–L4 最完整；VulnHunter 强在 L5；Strix/Sentinel 强在 L6 但 L4 策略不同。
+Aurora 覆盖 L1–L4 最完整；Clouditera VulnHunter 强在 L5（decide/gate/双向论证）与 L6（SandboxPlane）；Strix/Sentinel 强在 L6 但 L4 策略不同。
 
 ---
 
@@ -171,7 +172,7 @@ Aurora 覆盖 L1–L4 最完整；VulnHunter 强在 L5；Strix/Sentinel 强在 L
               ▼                  ▼                  ▼
      ┌────────────────┐ ┌────────────────┐ ┌────────────────┐
      │ 执行 Harness    │ │ 世界模型/双图   │ │ 质量管道        │
-     │ pi 或 dsh       │ │ 资产·探索·攻击图│ │ Falsify·Verify  │
+     │ pi/dsh/YoungFlow│ │ 资产·探索·攻击图│ │ decide·gate·论证│
      │ compact·tools  │ │ digest·prior   │ │ 独立只读 Agent  │
      └────────┬───────┘ └────────┬───────┘ └────────┬───────┘
               │                  │                  │
@@ -194,7 +195,7 @@ Aurora 覆盖 L1–L4 最完整；VulnHunter 强在 L5；Strix/Sentinel 强在 L
 1. LangGraph 线性战役 + Postgres checkpointer + 审批 interrupt  
 2. 接入 pi 或等价 session compact + JSONL 审计  
 3. Scope + safety YAML + irreversible  
-4. 工件落盘与发现 schema；预留 falsify 槽  
+4. 工件落盘与发现 schema；预留 decide/gate/双向论证槽  
 
 ---
 
@@ -235,7 +236,8 @@ Aurora 覆盖 L1–L4 最完整；VulnHunter 强在 L5；Strix/Sentinel 强在 L
 | Aurora 编排 | `backend/agents/orchestrator.py` |
 | Aurora 门禁 | `scope_guard.py`, `safety_gate.py`, `irreversible_gate.py` |
 | Aurora 记忆 | `engagement_memory.py` |
-| VulnHunter 阶段 | `vulnhunt/README.md` |
+| VulnHunter（Clouditera） | `flows/vulnforge/README.md` + YoungFlow |
+| YoungFlow | `02-frameworks/youngflow.md` |
 | Sentinel/pi 压缩 | `packages/coding-agent/docs/compaction.md` |
 | DeepAudit 压缩 | `backend/app/services/llm/memory_compressor.py` |
 | DeepAudit 图控 | `core/graph_controller.py` |

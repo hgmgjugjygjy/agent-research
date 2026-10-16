@@ -1,7 +1,7 @@
 {
   "meta": {
-    "title": "VulnHunter 证伪闭环",
-    "subtitle": "hunt → falsify → fix → verify",
+    "title": "VulnHunter（Clouditera）decide 螺旋",
+    "subtitle": "decide → stages → cycle_join → decide → report",
     "viewBox": [
       1080,
       580
@@ -16,27 +16,27 @@
     {
       "id": "orch",
       "type": "backend",
-      "label": "Orchestrator"
+      "label": "YoungFlow"
     },
     {
       "id": "hunt",
       "type": "backend",
-      "label": "Hunt"
+      "label": "hunt/cognize"
     },
     {
       "id": "fal",
       "type": "security",
-      "label": "Falsify"
+      "label": "verify 双向论证"
     },
     {
       "id": "fix",
       "type": "backend",
-      "label": "Fix"
+      "label": "poc/exp 可选"
     },
     {
       "id": "ver",
       "type": "security",
-      "label": "Verify"
+      "label": "gate/decision"
     },
     {
       "id": "out",

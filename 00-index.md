@@ -13,7 +13,7 @@
 2. **会话执行层参考 pi（或 dsh）**：工业级 compaction、会话树审计、扩展缝；Full-Chain-Sentinel 已验证「pi + 渗透壳」路径。  
 3. **记忆层抄 ARTEX 双图思想**（资产真值图 ∪ 探索血缘图 + 冷节点 digest），解决长程任务上下文爆炸。  
 4. **门禁层以 Aurora 四件套为基线**：runtime scope → YAML safety → irreversible 分级 → autonomy 档位；审批默认 fail-closed（警惕 Sentinel AI 审批 fail-open）。  
-5. **质量子系统独立借鉴 VulnHunter**：阶段隔离编排器上下文 + adversarial falsify + 只读 Verify Agent。  
+5. **质量/审计流水线可借鉴 Clouditera VulnHunter**：YoungFlow decide 螺旋 + gate/decision 文件路由 + 双向论证 + sandbox_cfg；引擎层见 YoungFlow。  
 
 **不建议**：整仓 fork AGPL 项目（ARTEX/DeepAudit）作内部闭源内核；不建议以 Strix Cloud 产品闭环替代自建控制面。
 
@@ -26,7 +26,8 @@
 | [01-competitors/ARTEX.md](01-competitors/ARTEX.md) | Go 双图 Planner–Worker 平台 |
 | [01-competitors/strix.md](01-competitors/strix.md) | 多 Agent 协调器 + 安全压缩 |
 | [01-competitors/AuroraRecon.md](01-competitors/AuroraRecon.md) | LangGraph Kill-Chain + 分层门禁 |
-| [01-competitors/vulnhunter.md](01-competitors/vulnhunter.md) | 白盒 Hunt–Fix–Verify |
+| [01-competitors/vulnhunter.md](01-competitors/vulnhunter.md) | Clouditera 工作台 · YoungFlow decide 螺旋 |
+| [02-frameworks/youngflow.md](02-frameworks/youngflow.md) | YoungFlow：LangGraph+pi flow runner |
 | [01-competitors/Full-Chain-Sentinel-System.md](01-competitors/Full-Chain-Sentinel-System.md) | pi fork 渗透控制台 |
 | [01-competitors/DeepAudit.md](01-competitors/DeepAudit.md) | ReAct 多 Agent 代码审计 |
 | [02-frameworks/pi-dsh-langchain-langgraph.md](02-frameworks/pi-dsh-langchain-langgraph.md) | 框架专章 |
@@ -41,9 +42,14 @@
 | ARTEX | 平台型调度+双图记忆最完整，抄思想不整仓 fork（AGPL）。 |
 | Strix | 多 Agent 协作与安全摘要标杆，门禁偏沙箱预算。 |
 | AuroraRecon | LangGraph+世界模型+分层门禁，自建渗透调度最贴蓝本。 |
-| VulnHunter | 阶段化证伪与独立复核的质量体系范本。 |
+| VulnHunter（Clouditera） | YoungFlow decide 螺旋 + gate/sandbox 的自托管挖掘工作台。 |
+| YoungFlow | VulnHunter 的 flow 引擎（LangGraph 编排 + pi 执行）。 |
 | Full-Chain-Sentinel | 证明 pi harness 可撑渗透控制台；战役编排仍弱。 |
 | DeepAudit | 审计向 Orchestrator 树与压缩/熔断工程化样板。 |
+
+## 纠偏记录
+
+- **VulnHunter 锚点**：原误用 capitalone/VulnHunter；2026-10-16 改为 **Clouditera/VulnHunter**。口语「yongflow」= **Clouditera/Youngflow**。
 
 ## 公开信息缺口
 

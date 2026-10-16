@@ -12,7 +12,8 @@ sequenceDiagram
   participant Comp as compaction/projection
   participant LLM as LangChain或LiteLLM
   participant Tool as 沙箱工具/MCP
-  participant Qual as 可选 VulnHunter Verify
+  participant YF as 可选 YoungFlow+VulnForge
+  participant Qual as decide/gate/verify
 
   Ctrl->>LG: 创建战役 thread + autonomy/scope
   LG->>CP: 编译图并持久化初始 state
@@ -33,9 +34,10 @@ sequenceDiagram
       LG->>LG: 重路由或重规划
     end
   end
-  opt 白盒质量子系统
-    LG->>Qual: 对 survivors 独立 Verify
-    Qual-->>Ctrl: disposition verdict
+  opt YoungFlow 资产包路径（如 VulnHunter）
+    Ctrl->>YF: youngflow flow.audit.yaml
+    YF->>Qual: decide 路由 + gate/双向论证
+    Qual-->>Ctrl: findings + decision/gate 信号
   end
   LG->>Ctrl: 战役完成 + 审计轨迹
 ```
@@ -46,4 +48,5 @@ sequenceDiagram
 2. dsh Turn 流：`turn/start → pre-step → request → tool/call* → turn/end`，瀑布须 `next()`。
 3. pi：lane + operation 状态机；overflow 时 compact-and-retry。
 4. 门禁应尽量落在 Graph 确定性节点或 harness 策略插件，避免只靠 prompt。
-5. 质量 Verify 应 **独立会话**，避免与挖洞 Agent 共享可写工具面。
+5. 质量门：VulnForge 用独立 stage（verify）+ gate 文件；YoungFlow 按 stage 隔离 pi session（可 session.reuse）。
+6. YoungFlow 与「LangGraph 控制面自建」可二选一，避免双编排叠床架屋。

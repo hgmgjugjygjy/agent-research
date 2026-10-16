@@ -1,7 +1,7 @@
 {
   "meta": {
-    "title": "VulnHunter 系统架构",
-    "subtitle": "Hunt → Fix → Verify 闭环",
+    "title": "VulnHunter（Clouditera）系统架构",
+    "subtitle": "YoungFlow + VulnForge decide 螺旋（已纠偏，原 capitalone 锚点作废）",
     "output": "architecture.html",
     "locale": "zh-CN",
     "quality_profile": "showcase"
@@ -10,7 +10,7 @@
     {
       "id": "har",
       "type": "backend",
-      "label": "Batch Harness",
+      "label": "Service/Workers",
       "pos": [
         40,
         80
@@ -18,12 +18,13 @@
       "size": [
         130,
         58
-      ]
+      ],
+      "sublabel": "Hono+Docker"
     },
     {
       "id": "agent",
       "type": "backend",
-      "label": "Agent",
+      "label": "YoungFlow",
       "pos": [
         220,
         80
@@ -32,12 +33,12 @@
         130,
         58
       ],
-      "sublabel": "headless SDK"
+      "sublabel": "LangGraph+pi"
     },
     {
       "id": "cc",
       "type": "backend",
-      "label": "Claude Code",
+      "label": "pi CLI",
       "pos": [
         400,
         80
@@ -46,12 +47,12 @@
         130,
         58
       ],
-      "sublabel": "Opus"
+      "sublabel": "session"
     },
     {
       "id": "hunt",
       "type": "backend",
-      "label": "Hunt skill",
+      "label": "VulnForge",
       "pos": [
         580,
         80
@@ -60,12 +61,12 @@
         130,
         58
       ],
-      "sublabel": "phases"
+      "sublabel": "flow.audit.yaml"
     },
     {
       "id": "fix",
       "type": "backend",
-      "label": "Fix skill",
+      "label": "decide",
       "pos": [
         580,
         220
@@ -73,12 +74,13 @@
       "size": [
         130,
         58
-      ]
+      ],
+      "sublabel": "decision.yaml"
     },
     {
       "id": "ver",
       "type": "security",
-      "label": "Verify",
+      "label": "verify/gate",
       "pos": [
         400,
         220
@@ -87,12 +89,12 @@
         130,
         58
       ],
-      "sublabel": "read-only"
+      "sublabel": "双向论证+gate"
     },
     {
       "id": "out",
       "type": "database",
-      "label": "RESULTS",
+      "label": "workspace",
       "pos": [
         800,
         150
@@ -100,7 +102,8 @@
       "size": [
         130,
         58
-      ]
+      ],
+      "sublabel": "todo/findings"
     },
     {
       "id": "gh",

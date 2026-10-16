@@ -1,9 +1,10 @@
-# Dataflow (mermaid 备用 · 待 Archify render)
+# Dataflow (mermaid 备用 · Clouditera 纠偏)
 
 ```mermaid
 flowchart LR
-  C[Candidates] --> F[Falsify]
-  F --> K[Confirmed]
-  K --> X[Fix]
-  X --> V[Verify]
+  COG --> ADV --> HYP
+  HYP --> Verify{双向论证}
+  Verify -->|confirmed| Finding
+  Finding --> POC[可选 poc-verify]
+  Decide((decide)) -.-> COG & ADV & HYP & POC
 ```

@@ -1,49 +1,57 @@
-# VulnHunter · 代码时序（代码视角）
+# VulnHunter（Clouditera）· 代码时序（代码视角）
 
-> 依据：`01-competitors/vulnhunter.md` + 上游 phases / agent 树。Hunt→Falsify→Verify 为质量闭环。
+> Decide 螺旋：decide → 执行 stage → cycle_join → decide… → report。质量门 = gate + 双向论证 + 可选沙箱 POC。不含利用步骤。
 
 ```mermaid
 sequenceDiagram
-  participant CLI as runner.py / Claude Code
-  participant Orch as vulnhunt/SKILL.md
-  participant FS as 产物目录
-  participant Hunt as Phase2 class agents
-  participant Fal as phase2b_verify Falsify
-  participant Cap as Capability Filter
-  participant Fix as vulnhunter-fix
-  participant Gates as run-gates/check-scope
-  participant Ver as verify_runner 只读信封
-  participant Disp as verify_disposition.json
+  participant UI as Web/API
+  participant Svc as packages/service
+  participant W as scan-worker Docker
+  participant YF as YoungFlow orchestrator
+  participant Dec as stage decide
+  participant On as stage onboard
+  participant Ex as map stages hunt/verify/…
+  participant Gate as gate.yaml
+  participant DecY as decision.yaml
+  participant SB as sandbox-plane
+  participant FS as output_dir 工作区
 
-  CLI->>Orch: 启动 /vulnhunt 或 headless scan
-  Orch->>FS: 校验 Phase1 recon 产物存在
-  Orch->>Hunt: Agent 派生并行 inj/nav/logic
-  Hunt->>FS: 写候选 findings
-  Orch->>Fal: 对抗证伪「为何打不通」
-  Fal-->>FS: 淘汰弱候选约半数
-  Orch->>Cap: 过滤真实攻击者能力
-  Cap->>FS: survivors + 路径说明
-  Note over Orch,FS: 编排器仍不持 findings 全文
-  Orch->>FS: Phase3/3d/4 复现建议与报告
-
-  opt 开发修复环 /vulnhunter-fix
-    CLI->>Fix: 读 survivors
-    Fix->>Gates: RED 测试门 + scope 门
-    Fix->>Fix: GREEN 改码 / graph query
-    Fix->>FS: patch / PR 材料
+  UI->>Svc: 创建审计任务
+  Svc->>W: 拉起 Worker + 挂载源码/flow
+  W->>YF: youngflow flow.audit.yaml
+  YF->>Dec: 进入 decide
+  Dec->>FS: coverage / workspace_diff
+  Dec->>DecY: 写 next + 派发 todo/*
+  alt next=onboard
+    YF->>On: map todo/onboard-*
+    On->>SB: list/get/apply_sandbox（若动态）
+    On->>Gate: next=continue|end
+    alt end
+      YF->>YF: route exit
+    else continue
+      YF->>YF: cycle_join → decide
+    end
+  else next=cognize|hunt|verify|…
+    YF->>Ex: map 对应 todo 文件
+    Ex->>FS: wiki/ADV/HYP/findings
+    Note over Ex: verify=affirmer+challenger
+    YF->>YF: cycle_join → decide
+  else next=poc-verify|ev-assess|exp-build
+    YF->>Ex: 动态阶段（读 sandbox_cfg）
+    Ex->>FS: poc/exp 产物状态字段
+    YF->>YF: cycle_join → decide
+  else next=report
+    YF->>FS: report/completion.yaml
+  else next=exit
+    YF-->>Svc: 异常收口
   end
-
-  CLI->>Ver: 全新会话 + 只读工具信封
-  Ver->>FS: 读 finding + patch
-  Ver->>Disp: 写 per-finding verdict schema
-  Note over Ver,Disp: 无 Bash / 无网络；防自卖自夸
+  YF-->>Svc: 同步产物 / 状态
+  Svc-->>UI: findings + 审核工作流
 ```
 
 ## 说明
 
-1. 阶段闸门靠 **产物文件存在** 推进，不是常驻服务状态机。
-2. Phase2b **Falsify** 与 Capability Filter 是 Hunt 内硬质量门。
-3. Fix 可选；脚本门防止空话修复（hand-wave guard）。
-4. Verify **分 skill、分会话、只读信封** → `verify_disposition.json`。
-5. Batch：`harness/local_harness/batch` 多仓 + `--resume`；扫描默认不改目标仓。
-6. Sandbox 段与 `--enable-bash` 控制是否允许动态复现工具。
+1. 路由信号是 **文件**：`decision.yaml` / `gate.yaml`，不是 Claude Code skill 切换。
+2. `cycle_join` 收口后回到 decide（`max_loops`）；`recursion_limit` 是 LangGraph 步进预算。
+3. 动态阶段依赖 `enable_poc/exp/chain` + sandbox available；未配置 sandbox_cfg 时可本地执行（产品需自行收紧）。
+4. 平台侧 findings 审核与 flow 内 verify **分层**：前者人审状态，后者论证裁决。

@@ -1,10 +1,11 @@
-# Sequence (mermaid 备用 · 待 Archify render)
+# Sequence (mermaid 备用 · Clouditera 纠偏)
 
 ```mermaid
 sequenceDiagram
-  Orch->>P1: recon
-  Orch->>P2: hunt parallel
-  Orch->>P2b: falsify
-  Orch->>P3: poc
-  Orch->>FS: report
+  Service->>Worker: start scan
+  Worker->>YoungFlow: run flow.audit.yaml
+  YoungFlow->>Decide: schedule
+  Decide->>Stage: dispatch todo
+  Stage->>Decide: cycle_join
+  Decide->>Report: when next=report
 ```

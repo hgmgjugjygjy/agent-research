@@ -2,8 +2,8 @@
   "schema_version": 1,
   "diagram_type": "dataflow",
   "meta": {
-    "title": "VulnHunter 质量漏斗",
-    "subtitle": "cand → falsify → confirm → verify",
+    "title": "VulnHunter（Clouditera）认知漏斗",
+    "subtitle": "COG→ADV→HYP→verify→finding→可选POC",
     "locale": "zh-CN",
     "output": "dataflow.html",
     "viewBox": [
@@ -15,44 +15,44 @@
   },
   "stages": [
     {
-      "label": "候选"
+      "label": "假设"
     },
     {
-      "label": "证伪"
+      "label": "双向论证"
     },
     {
-      "label": "确认"
+      "label": "Finding"
     },
     {
-      "label": "验证"
+      "label": "POC/审核"
     }
   ],
   "nodes": [
     {
       "id": "cand",
       "type": "backend",
-      "label": "Candidates",
+      "label": "HYP",
       "stage": 0,
       "row": 0
     },
     {
       "id": "fal",
       "type": "security",
-      "label": "Falsify",
+      "label": "双向论证",
       "stage": 1,
       "row": 0
     },
     {
       "id": "conf",
       "type": "database",
-      "label": "Confirmed",
+      "label": "Finding",
       "stage": 2,
       "row": 0
     },
     {
       "id": "ver",
       "type": "security",
-      "label": "Verify",
+      "label": "POC/审核",
       "stage": 3,
       "row": 0
     }

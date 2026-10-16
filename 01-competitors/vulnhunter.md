@@ -1,71 +1,90 @@
-# VulnHunter（capitalone/VulnHunter）竞品研究
+# VulnHunter（Clouditera/VulnHunter · 云起无垠）竞品研究
 
-> 仓库：https://github.com/capitalone/VulnHunter · Python（技能为主）· Apache-2.0 · Stars ≈1.1k  
-> Capital One 开源；依赖 Claude Code / Opus 级推理。
+> **纠偏说明（2026-10-16）**：此前调研误标 [capitalone/VulnHunter](https://github.com/capitalone/VulnHunter)（Claude Code 三技能 Hunt→Fix→Verify）。**现以云起无垠 [Clouditera/VulnHunter](https://github.com/Clouditera/VulnHunter) 为准。** capitalone 仅为易混淆同名开源项目，脚注保留，不作本调研主锚点。  
+> 仓库：https://github.com/Clouditera/VulnHunter · TypeScript monorepo · Stars ≈78 · 版本 ≈2.3.x · License：Apache-2.0 + 附加条款（open-core；`package.json` 亦标 AGPL-3.0-only，合入前需法务再核）  
+> 编排运行时：**YoungFlow**（子模块 `submodules/youngflow` → [Clouditera/Youngflow](https://github.com/Clouditera/Youngflow)）  
+> 核心审计资产包：`flows/vulnforge/`（`flow.audit.yaml` decide 螺旋）
 
 ## A. 定位与技术栈
 
 | 项 | 内容 |
 |---|---|
-| 定位 | **源码侧**攻击者优先分析：入口→ sink 前向推理 + 证伪引擎；非黑盒动态渗透平台 |
-| 形态 | Claude Code **prompt-only skills** + 可选 headless Agent + batch harness |
-| 技能三件套 | `/vulnhunt`（Hunt）→ `/vulnhunter-fix`（Fix）→ `/vulnhunt-fix-verify`（Verify） |
-| 运行时 | `vulnhunter-agent/`：Claude Agent SDK 无头跑 skill；TOML + 环境变量配置 |
-| 存储产物 | `*_VULNHUNT_RESULTS_*` 目录；可选推送到报告仓 / 开 GitHub Issue |
+| 定位 | **自托管 AI 漏洞挖掘工作台**：目标画像 → 认知螺旋审计 → 双向论证 → 可选沙箱 POC/EXP → 审核与报告；白盒/源码侧为主，带平台壳 |
+| 形态 | pnpm/turbo monorepo：`packages/{service,web,shared,worker-bridge,enterprise}` + `flows/{vulnforge,vulnhunter-report}` + Docker Workers |
+| 编排 | **YoungFlow** 执行 `flows/vulnforge/flow.audit.yaml`；CLI `youngflow flow.audit.yaml --work-dir … --output-dir …` |
+| 会话执行 | YoungFlow 底层调 **pi CLI**（`@earendil-works/pi-*`）；扩展经 pi extension（coverage / output-contract / sandbox-plane / workspace-diff） |
+| 服务面 | Hono + WebSocket + MCP；Postgres + MinIO；React/Vite Web（端口默认 23000） |
+| 模型 | `models.json.example` + 多凭证；OpenAI 兼容等多 provider（非绑定单一 Claude Code） |
+| 沙箱 | `deploy/sandbox/` SandboxPlane + flow input `sandbox_cfg`；profiles：`base-linux` / `linux-docker`(sysbox) / `linux-qemu-system` |
 
-## B. Agent 拓扑
+## B. Agent 拓扑（VulnForge decide 螺旋）
 
-**Dispatcher + 阶段子 Agent**（非常驻多 Agent 服务）：
+**不是** capitalone 的 Hunt→Fix→Verify 三 skill；而是 **decide 驱动的认知螺旋**（wiki + coverage 锚定）：
 
-| 阶段 | 职责 |
+| Stage id | 职责 |
 |---|---|
-| Phase1 Recon | 输入清单、分区、可达性 |
-| Phase2 Hunt | 并行 class agents（injection / navigation / logic-crypto）+ sink 审计 |
-| Phase2b Verify | **对抗式证伪**，淘汰约半数弱候选 |
-| Phase3 Reproduce | PoC / 测试 / 修复策略（不改目标仓） |
-| Phase3d Sweep | 根因模式全库扫 |
-| Phase4 Report | 编排器汇总 |
+| **decide** | 唯一调度器：读工作区 / coverage / workspace_diff，写 `decision.yaml.next`，维护 todo/leads/done；**不亲自**建认知/狩猎/论证/复现 |
+| onboard | 画像 + wiki + 威胁模型；写 `gate.yaml`（continue\|end）；动态任务经 sandbox-plane 申请沙箱 |
+| cognize | 切面认知（COG）→ 产出 ADV 审计链路 |
+| research | 公开情报检索（可选 pi-web-access）→ ADV/线索 |
+| hunt | 沿 ADV 精读 → 产出 HYP 假设 |
+| verify | **双向论证**（affirmer + challenger）→ confirmed finding 或 refuted |
+| poc-verify / ev-assess / exp-build | 可选动态复现 / 单洞 EXP / 组合链（需 enable_* + sandbox） |
+| cycle_join → decide | 回环（max_loops 业务阀） |
+| report / complete / exit | 汇总或异常退出 |
 
-编排器 `SKILL.md` **故意不做安全分析**，避免发现进编排上下文导致方法论漂移。
+提示词四层（YoungFlow 契约）：**Agent**（`agents/agent.md`） / **Skill**（方法论） / **Task**（`tasks/*.md`） / **Prompt**（flow YAML 运行时变量）。
 
 ## C. 调度管理
 
-- 交互：Claude Code 会话内按阶段 `Agent` 工具派生子会话，校验产物文件存在再进入下一阶段
-- 无头：`python -m agent <repo-url>` → clone → 跑 `/vulnhunt` → manifest → 可选 publish/issues
-- Batch：`harness/local_harness/batch` 多仓扫描；`--resume` 跳过已完成
-- Verify 模式：只读工具信封，输出 per-finding 判决 schema
-- 失败重试：Agent SDK 对 429 等瞬态错误重试；auth 统一 `build_claude_settings`
+- **引擎**：YoungFlow = LangGraph DAG + pi 执行器；stage 类型 single / parallel / map / join  
+- **路由契约**：`decision.schema.yaml` 的 `next` ∈ {onboard,cognize,hunt,verify,poc-verify,ev-assess,exp-build,report,exit}；`gate.schema.yaml` 的 `next` ∈ {continue,end}  
+- **平台侧**：`packages/service` workers（`scheduler.ts` / `scan-worker.ts` / reconciler）起 Docker Worker，挂载 flow 资产与产物；任务生命周期（创建/暂停/取消/恢复/重跑）  
+- **并行**：flow `defaults.max_parallel`；map stage `concurrency`；decide `max_parallel: 4`  
+- **续跑**：YoungFlow `--resume` / `--continue`；平台任务控制面再包一层  
+- **报告 flow**：另有 `flows/vulnhunter-report/flow.yaml` 独立报告流水线  
 
 ## D. 上下文压缩
 
-- **方法论级上下文隔离**：分阶段子 Agent + 共享只读参考（`phase2_shared.md` 缓存），编排器不持有 findings 全文
-- Fix 技能侧有 `graph/`（代码属性图 build/query）把结构外置，减轻 prompt
-- 无类似 Strix/pi 的通用 transcript compaction 模块；依赖 Claude Code 自身上下文与阶段切分
-- Agent 配置含 autocompact threshold（对接 Claude Code 自动压缩）
+- **阶段隔离 + 工作区外置记忆**：wiki / COG / ADV / HYP / findings / knowledge 落盘；decide 不持全量源码分析正文  
+- **coverage extension**：hunt 阅读覆盖率外置，decide/report 用 viewer 查询  
+- **workspace-diff / snapshot**：decide 只看增量，降低上下文污染  
+- **YoungFlow/pi**：`defaults.compaction` + `session.reuse` / `session.compact_at`（引擎层）；会话进 `.youngflow/sessions/`  
+- 无 capitalone 式「编排器故意不读 findings」同名机制，但 **decide 角色边界**达到类似效果  
 
 ## E. 门限审核
 
-- 证伪引擎 = **质量门**：未通过 adversarial disprove / capability filter 不进入报告
-- Verify Agent：**只读**（Read/Write/Edit/Glob/Grep/Agent，无 Bash、无网络）— 独立验证闭环
-- Fix 技能：`run-gates.py` / `check-scope.py` 等脚本门；hand-wave guard 防空话修复
-- Anthropic Cyber Verification / 双用途免责声明；扫描默认不改目标代码
-- Sandbox 段可限制 CLI 文件系统/网络；`Bash` 默认剥离除非 `--enable-bash`
+| 门 | 落点 |
+|---|---|
+| **onboard gate** | `gate.yaml`：continue→cycle_join / end→exit；reason 枚举含 `no_compatible_sandbox` 等；平台 `parseGateYaml` fail-closed |
+| **decide 路由门** | 只派发、不执行；`sched_instr` 可截断阶段；动态任务要求 `knowledge/build/build.md` sandbox=available |
+| **双向论证质量门** | verify：affirmer + challenger；hyp_status confirmed\|refuted；未确认不成 finding |
+| **output-contract** | 产物写权限 + schema 校验（extension） |
+| **工具白名单** | stage `tools` **整表替换** defaults；扩展工具须同时进 tools + extensions |
+| **沙箱** | `flow_inputs.sandbox_cfg`；sandbox-plane 只暴露 profile 能力标志，不回传地址/凭证；POC/EXP 可走隔离 profile |
+| **产品审核** | Findings 四态审核工作流（平台层，非 flow stage） |
 
 ## F. 可借鉴 / 不适合
 
 **可借鉴**
 
-1. Hunt→Fix→Verify **三人分权**，防自卖自夸  
-2. 编排器不做分析、阶段产物落盘 — 上下文与质量双赢  
-3. Falsification 作为一等公民门禁  
-4. Headless Agent + manifest schema 作为 CI 合约  
+1. **YAML flow + decide 螺旋**：调度与执行分权，路由信号文件化（decision/gate）  
+2. **Skill 外置方法论**，flow 只保留高层认知动作  
+3. **gate fail-closed + sandbox plane 代理**（凭证不下沉到 agent）  
+4. **todo/leads/done + wiki** 作为跨 session 记忆协议  
+5. 平台壳（任务/Chat MCP/报告）与审计引擎解耦  
 
-**不适合**
+**不适合 / 风险**
 
-1. 强绑定 Claude Code/Opus，难以多模型中立调度  
-2. 面向白盒源码，不覆盖黑盒/资产发现调度  
-3. 「调度平台」能力弱，本质是技能流水线  
+1. 强依赖 YoungFlow + pi 栈；自建平台若已选纯 LangGraph，需适配或替换引擎层  
+2. Open-core / 许可证表述需法务核（Apache 附加条款 vs package.json AGPL）  
+3. decide 螺旋靠 LLM 调度，需 `max_loops` / recursion_limit / sched_instr 防漂  
+4. 动态 POC/EXP 与沙箱运维成本高；未配置 sandbox 时本地执行风险需产品策略兜住  
 
 ## 一句话结论
 
-**VulnHunter 示范「阶段化子 Agent + 证伪门 + 独立复核」的质量体系；适合纳入扫描质量子系统，而非运行时调度内核。**
+**Clouditera VulnHunter 是「YoungFlow decide 螺旋 + 平台壳 + 沙箱平面」的自托管漏洞挖掘工作台；质量门在 decide/gate/双向论证/sandbox_cfg，而非 capitalone 式 Claude Code 三技能。**
+
+## 脚注：同名项目 capitalone/VulnHunter
+
+Apache-2.0、Python、Claude Code skills（`/vulnhunt` `/vulnhunter-fix` `/vulnhunt-fix-verify`）+ `vulnhunter-agent`。与本仓目录结构、编排引擎、产品形态均不同；用户截图中的 `flows/vulnforge`、`id: decide`、`sandbox_cfg` **仅属于 Clouditera 版**。

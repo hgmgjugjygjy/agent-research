@@ -1,82 +1,74 @@
-# VulnHunter · 代码模块拓扑（代码视角）
+# VulnHunter（Clouditera）· 代码模块拓扑（代码视角）
 
-> 依据：`01-competitors/vulnhunter.md` + `_trees/VulnHunter.json` + 上游树；仅模块/调用关系。不含利用步骤。
+> 依据：Clouditera/VulnHunter 树 + `flows/vulnforge/flow.audit.yaml` + YoungFlow 子模块。  
+> **纠偏**：非 capitalone Claude Code 三技能；主轴为 **flows → stages → decide → schemas/templates → sandbox**。不含利用步骤。
 
 ```mermaid
 flowchart TB
-  subgraph entry["入口"]
-    CLI["python -m agent repo-url\nvulnhunter-agent/agent/__main__.py"]
-    CC["Claude Code 交互会话"]
-    BATCH["harness/local_harness/batch/run.py"]
+  subgraph entry["入口 / 平台壳"]
+    WEB["packages/web React/Vite"]
+    SVC["packages/service Hono+WS+MCP"]
+    SCH["workers/scheduler.ts\nscan-worker.ts"]
+    ENT["packages/enterprise 商业增值"]
   end
 
-  subgraph skills["prompt-only skills"]
-    HUNT["vulnhunt/SKILL.md 编排器\n故意不做安全分析"]
-    FIX["vulnhunter-fix/SKILL.md"]
-    VER["vulnhunt-fix-verify/SKILL.md"]
+  subgraph data["数据面"]
+    PG[(PostgreSQL)]
+    MIN[(MinIO)]
   end
 
-  subgraph hunt_phases["vulnhunt/phases/"]
-    P1["phase1_recon.md"]
-    P2["phase2_hunt.md\n+ phase2_class_inj/nav/log.md\n+ phase2_shared.md"]
-    P2B["phase2b_verify.md\nAdversarial Disprove = Falsify"]
-    P3["phase3_reproduce_test.md\nphase3c_fixes.md\nphase3d_sweep.md"]
-    P4["phase4_report.md"]
+  subgraph worker["Docker Worker"]
+    YF["YoungFlow CLI\nsubmodules/youngflow"]
+    PI["pi CLI + extensions"]
   end
 
-  subgraph fixpkg["vulnhunter-fix/"]
-    FG["vulnhunter_fix/graph/\nbuild.py query.py schema.py"]
-    GS["scripts/run-gates.py\nscripts/check-scope.py"]
-    HW["tests/test_hand_wave_guard.py"]
-    FP["prompts/implement.md plan.md verify.md"]
+  subgraph flows["flows/ 资产包"]
+    VF["vulnforge/flow.audit.yaml"]
+    VR["vulnhunter-report/flow.yaml"]
   end
 
-  subgraph verpkg["vulnhunt-fix-verify/phases/"]
-    V0["phase0_preflight.md"]
-    V1["phase1_extract.md"]
-    V2["phase2_verify.md"]
-    V4["phase4_emit.md"]
+  subgraph vulnforge["flows/vulnforge/"]
+    DEC["stage id: decide\ntasks/decide.md"]
+    STG["stages: onboard cognize research\nhunt verify poc-verify\nev-assess exp-build report"]
+    SCHM["schemas/\ndecision.schema.yaml\ngate.schema.yaml\npoc/exp/cog/advice…"]
+    TPL["templates/\npoc exp cog advice…"]
+    SK["skills/* SKILL.md"]
+    EXT["extensions/\noutput-contract\nsandbox-plane\ncoverage / workspace-diff"]
+    MOD["models.json.example"]
   end
 
-  subgraph agentrt["vulnhunter-agent/"]
-    RUN["agent/runner.py"]
-    BS["agent/build_settings.py\n_build_sandbox + 工具信封"]
-    MAN["agent/manifest.py\nscan_manifest.schema.json"]
-    VR["agent/verify_runner.py\n只读工具信封"]
-    VFY["agent/verify.py + verify_*.py"]
-    DISP["verify_disposition.schema.json"]
-    AUD["agent/audit.py"]
-    CFG["agent/config.py TOML"]
+  subgraph sandbox["沙箱平面"]
+    DEP["deploy/sandbox/\nconfig.yaml profiles.yaml"]
+    SP["sandbox-plane extension\nlist/get/apply_sandbox"]
+    CFG["flow_inputs.sandbox_cfg\n→ .sandbox_config"]
   end
 
-  subgraph artifacts["落盘产物"]
-    RES["*_VULNHUNT_RESULTS_*"]
-    VERD["per-finding verdict\nverify_disposition.json"]
+  subgraph workspace["输出工作区"]
+    TODO["todo/ leads/ done/"]
+    DY["decision.yaml / gate.yaml"]
+    KNOW["knowledge/wiki coverage build"]
+    FIND["findings/BUG-*/"]
   end
 
-  CLI --> RUN
-  BATCH --> RUN
-  CFG --> BS --> RUN
-  RUN --> CC
-  CC --> HUNT & FIX & VER
-  HUNT --> P1 --> P2 --> P2B --> P3 --> P4
-  P4 --> RES
-  FIX --> FG & GS & HW & FP
-  FIX --> RES
-  VER --> V0 --> V1 --> V2 --> V4
-  RUN --> MAN
-  VR --> VFY --> DISP
-  VR --> VER
-  V4 --> VERD
-  AUD --> RUN
-  HUNT -.->|"编排器不持 findings 全文"| P2
+  WEB --> SVC --> SCH
+  SVC --> PG & MIN
+  SCH --> YF
+  YF --> VF & VR
+  VF --> DEC --> STG
+  VF --> SCHM & TPL & SK & EXT & MOD
+  YF --> PI
+  EXT --> SP
+  SP --> DEP
+  STG --> CFG
+  DEC --> DY & TODO
+  STG --> KNOW & FIND
+  ENT -.-> SVC
 ```
 
 ## 说明
 
-1. 三 skill 分权：`/vulnhunt` 找洞、`/vulnhunter-fix` 修、`/vulnhunt-fix-verify` 独立复核。
-2. **Falsify** = `phases/phase2b_verify.md`（对抗证伪），再经 Capability Filter 后才进报告。
-3. Headless：`runner.py` + Claude Agent SDK；`build_settings._build_sandbox` 限制 FS/网络（默认可关）。
-4. Verify：`verify_runner.py` **剥离 Bash/Network**，只留 Read/Write/Edit/Glob/Grep/Agent。
-5. CI 契约：`scan_manifest.schema.json` + `verify_disposition.schema.json`。
-6. Fix 侧脚本门 `run-gates.py` / `check-scope.py` + hand-wave guard；结构外置到 `vulnhunter_fix/graph/`。
+1. **YoungFlow** 跑 `flow.audit.yaml`；平台只负责任务/存储/Worker 生命周期。
+2. **decide** 写 `decision.yaml.next` 做路由；**onboard** 写 `gate.yaml` 做环境门禁。
+3. **sandbox_cfg** 经 sandbox-plane 申请；扩展不泄露沙箱地址/凭证。
+4. schemas/templates 约束产物契约；skills 外置方法论。
+5. capitalone 的 `vulnhunter-agent` / `/vulnhunt` skill **不在本仓**。
