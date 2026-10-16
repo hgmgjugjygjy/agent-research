@@ -67,6 +67,42 @@
 | **阿里云（Qwen）** | 百炼「提供千问及第三方模型服务，覆盖文本、图像、音频、视频等多种模态」，文本生成主推 qwen3.8-max / qwen3.7-plus / qwen3.8-flash | https://help.aliyun.com/zh/model-studio/models |
 | **Moonshot（Kimi）** | 开放平台为「按量计费」模式，不提供订阅制；当前列出 K3 与 K2 系列 | https://platform.moonshot.cn/docs/pricing/chat |
 
+### 7.1 各型号优势与适用场景（官方说法转述）
+
+> 2026-10-16 查阅各厂商官网/官方文档，只转述官方原话（括号内为英文原文短引）；官网没写的一律标「官网未注明」，不做推断。覆盖 §8.1 价格表中的型号。
+
+| 厂商 | 型号 | 官方定位 / 优势（转述） | 适用场景（官方说法） | 来源 URL |
+|---|---|---|---|---|
+| OpenAI | gpt-6-astra | 旗舰模型，「最强」的模型（"Our most capable model for the most demanding work"）；1.05M 上下文，支持函数、联网搜索、文件搜索、计算机操作 | 复杂推理与编码（"complex reasoning and coding"） | https://platform.openai.com/docs/models |
+| OpenAI | gpt-6.1-sol | 以更低成本获得接近 Astra 的表现（"Near-Astra performance for complex work at a lower cost"） | 需要平衡智能与成本的复杂任务 | https://platform.openai.com/docs/models |
+| OpenAI | gpt-6-luna | 效率最高的模型（"Our most efficient model for focused, high-volume tasks"） | 对成本敏感、高并发量的任务 | https://platform.openai.com/docs/models |
+| OpenAI | gpt-4o | 多用途、高智能的旗舰模型（"versatile, high-intelligence flagship model"），文本+图像输入 | 官方称其为「适合大多数任务」（"the best model for most tasks"，GPT-4o 发布时的口径） | https://platform.openai.com/docs/models/gpt-4o |
+| OpenAI | gpt-4o-mini | 快速、低成本的小模型（"fast, affordable small model for focused tasks"） | 专注型任务；适合微调，可从 GPT-4o 等大模型蒸馏以降低成本和延迟 | https://platform.openai.com/docs/models/gpt-4o-mini |
+| OpenAI | o1 | 经强化学习训练的推理模型，回答前先生成较长的内部思维链 | 复杂推理（官方标注为「上一代 o 系列推理模型」） | https://platform.openai.com/docs/models/o1 |
+| OpenAI | o3 | 跨领域的全面推理模型，在数学、科学、编码、视觉推理上树立新标准，也擅长技术写作和指令遵循 | 需跨文本、代码、图像分析的多步骤问题（官方注明已由 GPT-5 接替） | https://platform.openai.com/docs/models/o3 |
+| Anthropic | Claude Fable 5.1 | 面向高强度推理与长程 Agent 工作（"For demanding reasoning and long-horizon agentic work"）；延迟较慢 | 高难推理、长程 Agent；或 Opus 5.5 提高 effort 后评测仍不达标时 | https://docs.anthropic.com/en/docs/about-claude/models/overview |
+| Anthropic | Claude Opus 5.5 | 官方建议多数负载从它起步；面向长时间运行的 Agent 编码与知识工作 | 长时运行的 Agent 编码、知识工作 | 同上 |
+| Anthropic | Claude Sonnet 5.5 | 速度与智能的最佳组合（"The best combination of speed and intelligence"） | 官网未注明具体场景 | 同上 |
+| Anthropic | Claude Haiku 5.5 | 当前阵容中延迟最低（Fastest） | 高并发、低延迟任务，如分类、抽取、路由 | 同上 |
+| Anthropic | Claude Opus 4.5 / Sonnet 4.5（legacy） | 官网仅列为 legacy（仍可用），模型总览页未给出定位 | 官网未注明 | 同上 |
+| Google | gemini-4-argon | 旗舰推理模型，统一 1M 上下文，长解码最多 1M tokens | 官网未注明具体场景 | https://ai.google.dev/gemini-api/docs/models |
+| Google | gemini-3.8-flash | 「最智能的 Flash 模型」 | 长程软件工程、自主 Agent、复杂企业工作流 | 同上 |
+| Google | gemini-3.5-flash-lite | 3.5 系列中最快、性价比最高 | 高吞吐执行（"high-throughput execution"）；官方建议新项目使用 3.5 Flash-Lite 或 3.8 Flash | 同上 |
+| Meta | muse-wonder-1.0 | 前沿编码、长时运行 Agent、高级计算机操作；能规划长任务并委派子 Agent，带主动记忆 | 大型仓库中的复杂工程任务（多文件并行修改与验证）；连续运行数小时的多步骤任务；操作浏览器、桌面与移动应用 | https://www.llama.com/ |
+| Meta | muse-spark-1.3 | 为长程编码与 Agent 工作打造，「代码更干净、token 更少」 | 长程编码、Agent 工作 | https://www.llama.com/ |
+| Meta | muse-spark-1.2 | 官网未注明（产品页只列价格及「不用于改进我们的产品」） | 官网未注明 | https://dev.meta.ai/products/meta-model-api |
+| Mistral | Mistral Large 4 | 先进的开权重通用多模态模型（"state-of-the-art, open-weight, general-purpose multimodal model"） | 官网未注明具体场景（归类于「通用模型：推理、编码、工具调用、Agent 任务」） | https://docs.mistral.ai/getting-started/models/ |
+| Mistral | Mistral Medium 3.5 | 前沿级多模态模型（Modified MIT 许可） | Agent 与编码场景（"optimized for agentic and coding use cases"） | 同上 |
+| Mistral | Mistral Small 4 | 混合模型，把指令、推理、编码统一到一个高效模型中（Apache 2.0） | 官网未注明具体场景 | 同上 |
+| DeepSeek | deepseek-v4-pro（V4-Pro-0813） | 官网未注明定位；文档列出的能力：思考/非思考模式、1M 上下文、JSON 输出、工具调用，兼容 OpenAI/Anthropic 接口；不支持视觉 | 官网未注明 | https://api-docs.deepseek.com/quick_start/pricing |
+| DeepSeek | deepseek-flash（V4.1-Flash） | 官网未注明定位；能力同上，另支持视觉；价格更低、并发上限更高（2500 对 500） | 官网未注明 | 同上 |
+| 阿里云 Qwen | qwen3.8-max | 官网未注明单模型定位（选型页把它列为文本生成与图片/视频理解模型） | 百炼文本生成文档给的通用场景：内容创作、客服、翻译、摘要、法律文书；未按型号区分 | https://help.aliyun.com/zh/model-studio/models · https://help.aliyun.com/zh/model-studio/text-generation |
+| 阿里云 Qwen | qwen3.7-plus | 官网未注明单模型定位（同样列在文本生成与理解下） | 同上，未按型号区分 | 同上 |
+| 阿里云 Qwen | qwen3.8-flash | 官网未注明单模型定位 | 同上，未按型号区分 | 同上 |
+| Moonshot Kimi | kimi-k3 | Kimi 目前能力最强的模型：2.8 万亿参数，原生视觉理解，1M 上下文 | 软件工程、知识工作、深度推理；长程编程与端到端知识工作 | https://platform.kimi.com/docs/models.md · https://platform.kimi.com/docs/llms.txt |
+| Moonshot Kimi | kimi-k2.6 | 支持视觉+文本输入、思考与非思考模式，256K 上下文 | 对话与 Agent 任务 | https://platform.kimi.com/docs/models.md |
+| Moonshot Kimi | kimi-k2.7-code | Kimi 的编程模型，在长上下文中更可靠地遵循指令，编程任务成功率更高，256K 上下文 | 编程 | 同上 |
+
 ## 8. 价格对比表
 
 > **规则**：只填官网定价页实际读到的数字（查阅 2026-10-16）；读不到的写「未能从官网核实」；官网未列的型号写「官网当前未列」。海外为美元 / 1M tokens，国内为官方人民币价 / 1M tokens。价格会变，以官网为准。「开源/开权重」一列只写官网明确写出的信息。
