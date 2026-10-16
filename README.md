@@ -5,6 +5,7 @@
 **约束**：只讨论调度、上下文、门禁与技术栈；不提供攻击利用步骤或 exploit PoC。  
 **竞品**：ARTEX、Strix、AuroraRecon、VulnHunter、Full-Chain-Sentinel-System、DeepAudit  
 **框架**：pi、dsh、LangChain、LangGraph  
+**入门**：不熟 Agent 概念时，先读 [`00-基础知识/`](00-基础知识/README.md)。
 
 ---
 
@@ -222,6 +223,7 @@ Aurora 覆盖 L1–L4 最完整；Clouditera VulnHunter 强在 L5（decide/gate/
 | 文件 | 说明 |
 |---|---|
 | `00-index.md` | 索引与结论 |
+| `00-基础知识/` | **入门层**：Agent 是什么、完整架构、名词专篇（图文） |
 | `01-competitors/*.md` | 六竞品全文 |
 | `02-frameworks/pi.md` | pi 独立使用文档 |
 | `02-frameworks/dsh.md` | dsh 独立使用文档 |

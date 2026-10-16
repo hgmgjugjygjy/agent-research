@@ -3,6 +3,7 @@
 **文档版本**：2026-10-16（Asia/Shanghai）  
 **目标**：为自建「漏洞扫描 / 挖掘」智能体调度平台提供架构选型材料。  
 **范围**：调度管理、上下文压缩、门限审核、技术栈；**不含** exploit / PoC 利用步骤。  
+**阅读顺序**：先读 [`00-基础知识/`](00-基础知识/README.md)（Agent 入门与名词），再读竞品与框架。  
 **交付仓**：`vevenlcf2/agent-research`。
 
 ---
@@ -23,6 +24,10 @@
 
 | 路径 | 内容 |
 |---|---|
+| [00-基础知识/](00-基础知识/README.md) | **入门层**：Agent 是什么、完整架构、关键名词专篇（图文） |
+| [00-基础知识/01-agent是什么.md](00-基础知识/01-agent是什么.md) | 定义、与聊天机器人差异、图1/图2讲解 |
+| [00-基础知识/02-agent完整架构.md](00-基础知识/02-agent完整架构.md) | 端到端走读（Planner→Loop→Reflection + Memory/Tool/MCP） |
+| [00-基础知识/名词/](00-基础知识/名词/README.md) | 名词索引（Planner、Memory、MCP、Reflection 等 12 篇） |
 | [01-competitors/ARTEX.md](01-competitors/ARTEX.md) | Go 双图 Planner–Worker 平台 |
 | [01-competitors/strix.md](01-competitors/strix.md) | 多 Agent 协调器 + 安全压缩 |
 | [01-competitors/AuroraRecon.md](01-competitors/AuroraRecon.md) | LangGraph Kill-Chain + 分层门禁 |
