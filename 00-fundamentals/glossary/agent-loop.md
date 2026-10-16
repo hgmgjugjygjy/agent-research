@@ -53,6 +53,37 @@ flowchart LR
 
 ---
 
+![ReAct 循环](../assets/react-loop.svg)
+
+*图：ReAct 循环。Thought（决定下一步）→ Action（tool_call）→ 执行 → Observation 回填 → 判断是否完成或超出步数上限。PNG：[react-loop.png](../assets/react-loop.png)*
+
+![Plan-Execute 循环](../assets/plan-execute.svg)
+
+*图：Plan-Execute 循环。先整体出计划，Executor 逐步执行（每步内部可再跑 ReAct），Replanner 根据结果决定继续、调整或收尾。PNG：[plan-execute.png](../assets/plan-execute.png)*
+
+## 技术实现原理
+
+**数据结构**：`messages` 数组（system / user / assistant(含 tool_calls) / tool）；循环计数器；Plan-Execute 额外有 `plan: list[Step{desc, status, result}]`。
+
+**ReAct 最小实现**：
+```python
+def agent_loop(goal, max_steps=15):
+    msgs = [{"role": "system", "content": SYS}, {"role": "user", "content": goal}]
+    for _ in range(max_steps):
+        r = llm(msgs, tools=TOOLS)
+        msgs.append(r.message)
+        if not r.tool_calls:                 # 无工具请求 = 最终答案
+            return r.content
+        for c in r.tool_calls:
+            msgs.append(tool_result(c, run_tool(c)))
+        maybe_compact(msgs)                  # 超窗时压缩
+    return "达到步数上限，返回部分结果"
+```
+
+**Plan-Execute**：`plan = planner(goal)` → `for step in plan: result = react(step, context)` → `plan = replanner(goal, plan, results)`；直到 replanner 返回 final。
+
+**为什么**：ReAct 每步都看到最新观察，适应性强但容易绕圈；Plan-Execute 先定全局、成本可预估、便于人审计划，但对意外不敏感——所以常组合：外层计划、内层 ReAct。终止条件（无 tool_call / 步数 / 预算）必须是代码判断。
+
 ## 本仓关联
 
 **pi / dsh** 把该循环做成工业会话运行时（含压缩与审计）；**LangGraph** 可把循环收成节点，或在阶段内嵌套。平台应设循环上限与工具白名单。

@@ -1,0 +1,9 @@
+flowchart TB
+  G([目标]) --> P[Planner<br/>生成步骤列表]
+  P --> L[(Plan 队列<br/>step1..n)]
+  L --> E[Executor<br/>逐步执行·可内嵌 ReAct]
+  E --> R[结果累积]
+  R --> RP{Replanner<br/>计划仍有效?}
+  RP -->|需调整| P
+  RP -->|继续| L
+  RP -->|全部完成| F([汇总输出])

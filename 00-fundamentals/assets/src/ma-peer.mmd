@@ -1,0 +1,11 @@
+sequenceDiagram
+  participant A as Proposer Agent
+  participant B as Critic Agent
+  participant J as Judge(可选)
+  A->>B: 方案 v1
+  B-->>A: 质疑点 1..n
+  A->>B: 方案 v2(修订)
+  B-->>A: 接受 / 仍有异议
+  Note over A,B: 轮数上限 N，避免无限辩论
+  A->>J: 最终方案 + 争议摘要
+  J-->>A: 裁决

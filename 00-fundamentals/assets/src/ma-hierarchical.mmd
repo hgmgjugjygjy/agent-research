@@ -1,0 +1,11 @@
+flowchart TB
+  U[任务] --> S[Supervisor / Planner<br/>拆解·派发·验收]
+  S -->|意图1| Q[(任务队列 / Frontier)]
+  S -->|意图2| Q
+  Q -->|claimNext| W1[Worker 1]
+  Q -->|claimNext| W2[Worker 2]
+  Q -->|claimNext| W3[Worker 3]
+  W1 -->|结果| S
+  W2 -->|结果| S
+  W3 -->|结果| S
+  S --> R[汇总报告]

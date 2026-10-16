@@ -35,6 +35,24 @@
 
 ---
 
+## 技术实现原理
+
+**模式**：
+- **Self-Refine**：生成 → 自我批评 → 修订，循环至满意或上限。
+- **Reflexion**：失败后生成「教训」文本存入记忆，下次尝试时注入（语言化的经验强化）。
+- **Critic 分离**：另一 prompt/模型担任评审，避免自评偏差。
+
+```python
+draft = llm(task)
+for _ in range(2):
+    critique = llm(CRITIC_PROMPT, task, draft)
+    if critique.ok: break
+    draft = llm(REVISE_PROMPT, task, draft, critique.issues)
+lessons.add(summarize_failure(task, critique)) if not critique.ok else None
+```
+
+**为什么**：一次生成常有遗漏，评审-修订利用了「检查比生成容易」的不对称；但评审需尽可能接地（测试、检索证据），否则只是换种说法重复错误。
+
 ## 本仓关联
 
 VulnHunter / YoungFlow 的 decide 螺旋、双向论证，是 Reflection/Eval 产品化形态；Aurora 阶段门与之互补（一偏质量论证，一偏安全门禁）。

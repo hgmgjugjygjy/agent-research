@@ -1,0 +1,11 @@
+flowchart LR
+  M[多 Agent 协作模式] --> P1[Pipeline 顺序流水线<br/>A→B→C 固定交接]
+  M --> P2[Hierarchical 层级<br/>Supervisor 派活给 Worker]
+  M --> P3[Peer-to-Peer 协商<br/>对等 Agent 互发消息/辩论]
+  M --> P4[Blackboard 黑板<br/>共享状态 + 按需认领]
+  M --> P5[Router 路由分发<br/>按意图分到专家 Agent]
+  P1 --- C1[确定性高 · 易审计]
+  P2 --- C2[可拆解大任务 · 主管是瓶颈]
+  P3 --- C3[质量靠交叉质疑 · 成本高]
+  P4 --- C4[松耦合 · 并发好 · 需冲突控制]
+  P5 --- C5[便宜快 · 只做一次分类]

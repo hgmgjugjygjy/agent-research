@@ -35,6 +35,20 @@
 
 ---
 
+## 技术实现原理
+
+**在 Agent 中的落点**：每次调用 LLM 时，输入 = 系统提示 + 目标 + 历史观察 + 工具列表，输出 = 「下一步动作」（tool_call 或最终答案）。推理质量由三类手段提升：
+1. **提示**：CoT、要求先列假设再验证。
+2. **模型**：原生推理模型（可配 reasoning effort 档位，以延迟/成本换准确率）。
+3. **结构**：把判断拆成结构化字段（`{analysis, decision, confidence}`），低置信度触发检索或人工。
+
+```python
+d = llm(ctx, response_format={"analysis": str, "next_action": str, "confidence": float})
+if d.confidence < 0.6: d = escalate(ctx)
+```
+
+**为什么**：把「想」与「做」分离并显式化，便于检查与路由；按难度分配推理预算控制成本。
+
 ## 本仓关联
 
 会话层（pi 等）与编排层都依赖可靠 tool-calling 推理；门禁决策可交给专用判定，不必全靠同一生成模型「自觉」。

@@ -35,6 +35,34 @@
 
 ---
 
+![Function calling 与 MCP 时序](../assets/tool-calling-mcp.svg)
+
+*图：工具调用时序。运行时把工具 JSON Schema 交给模型 → 模型返回结构化 `tool_call` → 运行时校验并执行 → 结果以 `role=tool` 回填 → 模型继续。工具可来自本地注册，也可经 MCP 动态发现。PNG：[tool-calling-mcp.png](../assets/tool-calling-mcp.png)*
+
+## 技术实现原理
+
+**数据结构**：工具定义 `{name, description, parameters: JSON Schema}`；模型输出 `tool_call{id, name, arguments(JSON 字符串)}`；回填消息 `{role:"tool", tool_call_id, content}`。
+
+**流程（function calling）**：
+1. 注册：每个函数生成 JSON Schema（可由 Pydantic / 类型注解自动生成）。
+2. 调用 LLM 时附带 `tools=[...]`；模型经过专门训练，在需要时输出结构化 tool_call 而非文本。
+3. 运行时：解析 JSON → Schema 校验 → 权限/门禁检查 → 执行（超时、重试、沙箱）→ 结果截断/摘要后回填。
+4. 循环直到模型不再请求工具。多个独立 tool_call 可并行执行。
+
+```python
+tools = [{"name": "get_weather", "description": "查询城市天气",
+          "parameters": {"type": "object",
+                         "properties": {"city": {"type": "string"}},
+                         "required": ["city"]}}]
+resp = llm(messages, tools=tools)
+for call in resp.tool_calls:
+    args = validate(json.loads(call.arguments), tools_by_name[call.name])
+    out = REGISTRY[call.name](**args)
+    messages.append({"role": "tool", "tool_call_id": call.id, "content": str(out)[:4000]})
+```
+
+**为什么**：让模型只负责「决定调用什么、参数是什么」，执行由确定性代码完成——可校验、可审计、可加权限；Schema 是模型与代码之间的契约。
+
 ## 本仓关联
 
 LangChain 工具适配面广；pi/dsh 强调会话内 tool loop；MCP 提供协议化连接。平台要维护**工具白名单与风险分级**。

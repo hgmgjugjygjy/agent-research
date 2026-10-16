@@ -28,6 +28,20 @@
 
 ---
 
+## 技术实现原理
+
+**流程**：产出 → 校验器 → 若失败则把错误信息作为反馈重试（上限 N 次）。校验器优先用**确定性检查**（JSON Schema、单元测试、编译、正则、引用存在性），其次用 LLM-as-judge 打分。
+
+```python
+for i in range(3):
+    out = llm(task + feedback)
+    errs = schema_check(out) + run_tests(out)
+    if not errs: break
+    feedback = f"\n上次输出的问题：{errs}，请修正。"
+```
+
+**为什么**：模型「自己说自己对」不可靠；外部可验证信号（测试/编译/Schema）才能形成真正的纠错闭环。重试上限防止无限循环与成本失控。
+
 ## 本仓关联
 
 与 Reflection、Eval、门禁一起构成「质量 + 安全」双闭环。

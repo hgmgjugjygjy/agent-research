@@ -35,6 +35,27 @@
 
 ---
 
+![Function calling 与 MCP 时序](../assets/tool-calling-mcp.svg)
+
+*图：MCP 在工具调用中的位置。MCP Client（在 Agent 运行时内）通过 JSON-RPC 向 MCP Server 发现工具（`tools/list`）并调用（`tools/call`），模型侧看到的仍是普通工具 Schema。PNG：[tool-calling-mcp.png](../assets/tool-calling-mcp.png)*
+
+## 技术实现原理
+
+**协议要点**：基于 JSON-RPC 2.0；传输层常见 stdio（本地子进程）与 Streamable HTTP（远程）；握手 `initialize` 协商能力；三类原语——**tools**（可执行动作）、**resources**（可读数据，URI 寻址）、**prompts**（模板）。
+
+**流程**：
+1. Host（如 IDE / Agent 应用）为每个 Server 起一个 Client 连接，`initialize` 后 `tools/list` 拿到 `{name, description, inputSchema}`。
+2. 把这些 Schema 转成 LLM 的 tools 参数（与普通 function calling 相同）。
+3. 模型返回 tool_call → Client 发 `tools/call {name, arguments}` → Server 执行返回 `content[]`。
+4. 远程 Server 走 OAuth 授权；Host 负责用户确认与权限。
+
+```json
+{"jsonrpc":"2.0","id":7,"method":"tools/call",
+ "params":{"name":"search_issues","arguments":{"query":"label:bug"}}}
+```
+
+**为什么**：把「N 个应用 × M 个系统」的集成从 N×M 个私有适配降为 N+M——工具方写一次 Server，所有支持 MCP 的 Host 都能用；Schema 动态发现免去硬编码。
+
 ## 本仓关联
 
 架构图侧翼的「MCP」表示协议化连接器；落地时与 LangChain 工具、自研插件并列评估。本仓竞品分析不依赖某一 MCP 发行版细节。

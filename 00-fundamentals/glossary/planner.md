@@ -35,6 +35,21 @@
 
 ---
 
+## 技术实现原理
+
+**输出结构**：让 LLM 按 Schema 输出计划，`Plan{steps: [Step{id, description, depends_on: [id], tool_hint, done_criteria}]}`，形成 DAG。
+
+**流程**：目标 + 可用工具列表 + 约束 → Planner prompt → 结构化计划 → 拓扑排序 → 无依赖步骤可并行执行 → 每步结果回到 Replanner 判断是否修改剩余计划。
+
+```python
+plan = llm(PLANNER_PROMPT.format(goal=goal, tools=tool_list), response_format=Plan)
+for batch in topo_batches(plan.steps):
+    results |= parallel(execute_step(s) for s in batch)
+    plan = replan(goal, plan, results)
+```
+
+**为什么**：显式计划可被人审阅、可预估成本、可并行；Schema 化便于代码而非模型来驱动调度。
+
 ## 本仓关联
 
 Aurora / YoungFlow 等把「阶段」做进图；ARTEX Planner–Worker 分工。选型问：计划是否可序列化、可审计、可中断恢复。

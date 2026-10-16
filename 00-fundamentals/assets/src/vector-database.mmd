@@ -1,0 +1,16 @@
+flowchart TB
+  subgraph W[写入流 Upsert]
+    W1[文本块 + 元数据] --> W2[Embedding 模型<br/>→ d 维向量]
+    W2 --> W3[WAL 写前日志] --> W4[段 Segment / 分片]
+    W4 --> W5[建 ANN 索引<br/>HNSW 图 / IVF 聚类 / PQ 量化]
+    W4 --> W6[元数据倒排 / 标量索引]
+  end
+  subgraph Q[查询流 Search]
+    Q1[查询文本] --> Q2[同一 Embedding 模型]
+    Q2 --> Q3[元数据预过滤<br/>tenant / 时间 / 标签]
+    Q3 --> Q4[ANN 近邻搜索<br/>cosine / L2 / 内积]
+    Q4 --> Q5[可选 BM25 混合 + RRF 融合]
+    Q5 --> Q6[topK id + score + payload]
+  end
+  W5 -.索引.-> Q4
+  W6 -.过滤.-> Q3

@@ -1,0 +1,3 @@
+flowchart TB
+  IN[输入] --> A[Agent A<br/>采集/抽取] -->|结构化产物 v1| B[Agent B<br/>分析] -->|产物 v2| C[Agent C<br/>撰写/校验] --> OUT[输出]
+  C -.校验失败.-> B

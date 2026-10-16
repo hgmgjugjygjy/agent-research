@@ -1,0 +1,11 @@
+flowchart TB
+  U[用户任务] --> SUP[Supervisor 主管 Agent<br/>路由·分派·汇总]
+  SUP -->|子任务 A| R1[Research Agent<br/>检索/RAG]
+  SUP -->|子任务 B| R2[Coder Agent<br/>代码工具]
+  SUP -->|子任务 C| R3[Reviewer Agent<br/>校验/评分]
+  R1 --> BB[(共享状态 / 黑板)]
+  R2 --> BB
+  R3 --> BB
+  BB --> SUP
+  R2 -.handoff.-> R3
+  SUP --> OUT[最终答复]

@@ -47,6 +47,18 @@ flowchart TB
 | 门禁/HITL | 范围、不可逆、审批 | 替代业务逻辑 |
 | 观测 | 可审计、可复盘 | 自动「变聪明」 |
 
+### 1.1 渲染版：系统架构示意图
+
+![系统架构示意图](assets/system-architecture.svg)
+
+*图 A：系统架构。自上而下：入口网关（鉴权、限流、输入护栏）→ 编排层（状态机/检查点）→ Agent 内核（Planner→LLM 推理→Reflection，不通过则回到 Planner）。内核向右连**工具层**（function calling，经 **MCP** 接外部系统），向下连 **RAG**（向量库+重排）与 **Memory**（短期上下文/长期存储）；编排层挂 **HITL**；输出前过**输出护栏**；虚线表示 **Trace/Eval** 横切所有层。PNG：[system-architecture.png](assets/system-architecture.png)*
+
+### 1.2 组件关系图
+
+![组件关系图](assets/component-relations.svg)
+
+*图 B：组件关系（类图）。Orchestrator 调度多个 Agent；Agent **拥有** Memory（组合），**可调用**多个 Tool（聚合），并依赖 LLM、Planner、Retriever、Guardrail；MCPClient 把远端工具**动态注册**为 Tool；Retriever 也服务于长期记忆检索。读法：实心菱形＝生命周期绑定，空心菱形＝可插拔。PNG：[component-relations.png](assets/component-relations.png)*
+
 ---
 
 ## 2. 一次任务的端到端数据流（中性示例）
@@ -66,6 +78,10 @@ flowchart TB
 | 9 | Observability | 留下 trace：用了哪些 tool、token、审批人 |
 
 此例刻意**不含**扫描利用类动作，只演示闭环与门禁切面。
+
+![数据流图](assets/dataflow.svg)
+
+*图 C：端到端数据流。1 请求 → 2 理解（意图/约束，读记忆）→ 3 规划（任务 DAG）→ 4 判断下一步需要「外部动作」还是「知识」→ 5a 工具调用 / 5b RAG 检索 → 6 观察写入记忆 → 7 反思：未完成或有错回到 3，完成进入 8 输出（过护栏）。上表 9 步即此图的一次具体实例：表第 3 步对应 5b，第 4/8 步对应 5a，第 6 步对应 7，第 7 步的 HITL 发生在 5a 执行前（见[门禁时序](glossary/guardrails-hitl.md)）。PNG：[dataflow.png](assets/dataflow.png)*
 
 ---
 
@@ -113,9 +129,41 @@ flowchart LR
 | RAG 外置知识 | 大文档不进权重、不进永久窗口 | [rag](glossary/rag.md) |
 | 阶段切分 | 每阶段新会话 + 只传 digests | Orchestration |
 
+系统讲解见 [06-context-engineering.md](06-context-engineering.md) 与 [context-explosion](glossary/context-explosion.md)。
+
 ---
 
-## 6. 附录：外部示意图对照
+## 6. 技术实现原理：一个最小 Agent 运行时
+
+把上面各层串起来的骨架（伪代码，省略错误处理）：
+
+```python
+class AgentRuntime:
+    def __init__(self, llm, tools, memory, retriever, policy, tracer):
+        self.llm, self.tools, self.mem, self.rag, self.policy, self.tr = llm, tools, memory, retriever, policy, tracer
+
+    def run(self, goal, max_steps=20):
+        spec = understand(goal)                          # 任务理解 → 结构化规格
+        msgs = [system_prompt(spec), *self.mem.recall(goal)]
+        for step in range(max_steps):
+            with self.tr.span("llm"):
+                r = self.llm(msgs, tools=self.tools.schemas())   # 推理：决定下一步
+            if not r.tool_calls:
+                return self.policy.check_output(r.content)       # 输出护栏
+            for call in r.tool_calls:
+                if not self.policy.allow(call):                  # 门禁 / HITL
+                    msgs.append(denied(call)); continue
+                with self.tr.span("tool", name=call.name):
+                    obs = self.tools.execute(call)               # 执行（沙箱/超时）
+                msgs.append(tool_msg(call, obs))
+            msgs = compact_if_needed(msgs)                       # 上下文治理
+            self.mem.write(extract_facts(msgs[-4:]))             # 记忆写入
+        return "超出步数上限"
+```
+
+**为什么这样分层**：LLM 只做「判断」，确定性代码掌控「执行、权限、预算、终止」；每层可单独替换（换模型、换向量库、换编排引擎）与单独测试。编排层（图/状态机）在此运行时之外再包一层，负责阶段与检查点。
+
+## 7. 附录：外部示意图对照
 
 ![参考：完整架构](assets/agent-complete-architecture.jpg)
 
@@ -127,7 +175,7 @@ flowchart LR
 
 ---
 
-## 7. 读完下一步
+## 8. 读完下一步
 
 1. 按需查 [glossary/](glossary/README.md)（建议先：agent-loop · rag · orchestration · guardrails-hitl · context-compaction）  
 2. 再进 [02-frameworks/](../02-frameworks/) 与 [01-competitors/](../01-competitors/)  

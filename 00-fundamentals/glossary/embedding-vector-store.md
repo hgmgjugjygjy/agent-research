@@ -35,6 +35,20 @@
 
 ---
 
+## 技术实现原理
+
+> 向量库的索引、距离度量、产品对比等细节以 [vector-database.md](vector-database.md) 为主，本篇聚焦 Embedding 本身。
+
+**Embedding 如何产生**：编码器模型（Transformer）把文本编码为 token 向量，再经池化（mean pooling 或 [CLS]）得到一个 d 维向量（常见数百到数千维），训练目标是对比学习——相似文本对拉近、不相关拉远。
+
+**使用要点**：查询与文档用同一模型（部分模型要求加 `query:` / `passage:` 前缀）；归一化后 cosine 等价于内积；换模型必须全量重建索引。
+
+```python
+v = model.encode(["如何重置密码"], normalize_embeddings=True)[0]   # shape (d,)
+```
+
+**为什么**：把「语义相似」转化为「几何距离」，才能用近邻搜索在百万级数据里毫秒级找到相关内容。
+
 ## 本仓关联
 
 概念层服务 RAG；具体选型（开源/云）留给实现阶段，本调研不锁版本。

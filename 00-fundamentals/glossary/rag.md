@@ -66,6 +66,58 @@ flowchart LR
 
 ---
 
+![RAG 检索链路](../assets/rag-pipeline.svg)
+
+*图：RAG 检索链路。上半「离线索引」把文档变成可检索的向量；下半「在线查询」把问题变成带引用的答案。PNG：[rag-pipeline.png](../assets/rag-pipeline.png)*
+
+**图中各块**：解析清洗＝去页眉页脚、表格转文本；切块＝控制每块语义完整；Embedding＝把文本映射到向量空间；向量库＝存向量 + 元数据并建 ANN 索引（详见 [vector-database.md](vector-database.md)）；查询改写＝补全指代/扩展同义词；ANN + BM25＝语义召回与关键词召回互补；Rerank＝用更贵但更准的交叉编码器精排；拼 Prompt＝把 top 片段带编号放进上下文；LLM 生成＝要求按编号引用。
+
+## 技术实现原理
+
+**关键数据结构**：`Chunk{id, doc_id, text, vector: float[d], metadata{source, page, acl, updated_at}}`；索引 = 向量 ANN 索引（HNSW/IVF）+ 倒排索引（BM25）。
+
+**流程**：
+1. **切块**：按标题/段落递归切分，目标 300–800 token、10–20% 重叠——太大则语义被稀释、太小则丢上下文。
+2. **Embedding**：同一模型编码文档块与查询（必须一致，否则向量空间不对齐），通常 L2 归一化后用 cosine/内积。
+3. **召回**：ANN 取 topK（如 20–50），并行 BM25，用 RRF（Reciprocal Rank Fusion：`score=Σ 1/(k+rank_i)`）融合。
+4. **Rerank**：cross-encoder 对 (query, chunk) 成对打分，取 top 3–8。原因：双塔 embedding 快但粗，交叉编码器准但慢，只适合小候选集。
+5. **拼 Prompt**：`系统指令 + [1]片段… [n]片段 + 问题 + "只依据上文回答并标注 [编号]，无依据则说不知道"`。
+6. **生成与校验**：可做引用核对（答案句是否能在片段中找到支撑）。
+
+```python
+def rag_answer(q):
+    q2 = rewrite(q)                          # 查询改写
+    qv = embed(q2)
+    cand = rrf(vdb.search(qv, k=30, filter={"acl": user.groups}),
+               bm25.search(q2, k=30))
+    top = reranker.rank(q2, cand)[:5]
+    ctx = "\n".join(f"[{i+1}] {c.text}" for i, c in enumerate(top))
+    return llm(SYSTEM_CITE + ctx + "\n问题：" + q)
+```
+
+**为什么这样设计**：把「知识」放在模型外部 → 可更新、可溯源、可做权限过滤；两阶段（召回→精排）是在延迟与精度之间的经典折中；引用约束降低幻觉。
+
+## 相关
+
+- 上下文治理：[context-explosion.md](context-explosion.md) · [../06-context-engineering.md](../06-context-engineering.md)
+- 向量库专篇：[vector-database.md](vector-database.md) · Embedding：[embedding-vector-store.md](embedding-vector-store.md)
+
+## 用 RAG 缓解上下文爆炸
+
+> 总览见 [context-explosion.md](context-explosion.md)
+
+| 手段 | 做法 |
+|---|---|
+| 检索替代全量 | 文档不整份塞入，入向量库后每轮按问题取 top-k（rerank 后 3–8 段） |
+| 工具结果入库 | 超长工具输出切块写入临时索引，回填「摘要 + 可检索句柄」，后续按需检索 |
+| 历史入库 | 被压缩掉的旧轮次原文写入向量库，需要细节时检索回来（摘要 + 检索双保险） |
+| 预算感知 k | 根据剩余 token 预算动态决定 k 与片段长度 |
+
+```python
+k = min(8, remaining_budget // avg_chunk_tokens)
+ctx += rerank(q, vdb.search(embed(q), k=30))[:k]
+```
+
 ## 本仓关联
 
 调研笔记、架构决策、竞品摘要适合进知识库做 RAG；**战役进度、审批状态**应走 Memory / Orchestration 状态，而不是「再检索一次旧报告」。本仓框架章不绑定某一向量库产品版本。

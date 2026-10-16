@@ -1,0 +1,21 @@
+sequenceDiagram
+  autonumber
+  participant U as 用户
+  participant A as Agent
+  participant G as 策略门禁 Guardrail
+  participant H as 审批人 Human
+  participant T as 工具/外部系统
+  U->>A: 提交任务
+  A->>A: 规划并生成 tool_call
+  A->>G: 风险评估(动作类型/范围/金额)
+  alt 低风险
+    G-->>A: 放行
+  else 高风险(发消息/删除/付款)
+    G->>H: 审批卡片(动作+参数+理由)
+    Note over A,H: 检查点持久化，流程挂起
+    H-->>G: 批准 / 修改 / 拒绝
+    G-->>A: 结果
+  end
+  A->>T: 执行(仅已批准)
+  T-->>A: 结果
+  A->>U: 回报 + 审计日志

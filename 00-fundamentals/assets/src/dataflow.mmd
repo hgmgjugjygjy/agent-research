@@ -1,0 +1,13 @@
+flowchart TB
+  A[1 请求<br/>用户目标] --> B[2 理解<br/>意图/约束/槽位]
+  B --> C[3 规划<br/>任务分解 DAG]
+  C --> D{4 下一步需要?}
+  D -->|外部动作| E[5a 工具调用<br/>tool_call→执行]
+  D -->|知识| F[5b 检索 RAG<br/>query→topK→rerank]
+  E --> G[6 观察 Observation<br/>写入记忆]
+  F --> G
+  G --> H[7 反思<br/>是否达成/有错?]
+  H -->|未完成/有错| C
+  H -->|完成| I[8 输出<br/>护栏→答复/产物]
+  M[(Memory)] <-.-> B
+  M <-.-> G

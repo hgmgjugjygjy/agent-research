@@ -1,0 +1,14 @@
+flowchart TB
+  IN[新一轮输入] --> EST{估算 tokens<br/>> window - reserve ?}
+  EST -->|否| CALL[调用 LLM]
+  EST -->|是| ST[选择策略]
+  ST --> T1[工具结果裁剪<br/>头尾/摘要 + 落盘引用]
+  ST --> T2[摘要压缩<br/>旧轮→结构化 checkpoint]
+  ST --> T3[截断<br/>丢最早非关键轮]
+  ST --> T4[子 Agent 隔离<br/>子任务在独立上下文跑完只回摘要]
+  ST --> T5[渐进披露<br/>只加载当前需要的工具/文档]
+  T1 --> EST
+  T2 --> EST
+  T3 --> EST
+  T4 --> EST
+  T5 --> EST

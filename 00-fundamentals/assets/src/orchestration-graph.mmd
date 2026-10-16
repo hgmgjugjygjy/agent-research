@@ -1,0 +1,12 @@
+stateDiagram-v2
+  [*] --> Intake
+  Intake --> Plan
+  Plan --> Execute
+  Execute --> Review
+  Review --> Execute: 失败重试(≤N)
+  Review --> Approve: 需人工
+  Approve --> Execute: 批准
+  Approve --> [*]: 拒绝
+  Review --> Report: 通过
+  Report --> [*]
+  note right of Execute: 每个节点后写 checkpoint<br/>可中断恢复

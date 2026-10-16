@@ -1,0 +1,14 @@
+flowchart TB
+  subgraph CAUSE[成因: token 单调增长]
+    C1[多轮对话累积]
+    C2[长工具结果<br/>日志/网页/文件全文]
+    C3[多 Agent 共享上下文<br/>互相转发完整历史]
+    C4[全量塞文档]
+  end
+  CAUSE --> X((上下文爆炸<br/>超窗·变慢·变贵·变笨))
+  X --> S1[摘要压缩 Compaction]
+  X --> S2[滑动窗口 keepRecent]
+  X --> S3[RAG 检索替代全量]
+  X --> S4[分层记忆<br/>工作/长期/情景]
+  X --> S5[按需加载<br/>渐进披露工具与文档]
+  X --> S6[子 Agent 隔离<br/>只回传摘要]

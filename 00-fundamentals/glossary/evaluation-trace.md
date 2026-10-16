@@ -36,6 +36,24 @@
 
 ---
 
+## 技术实现原理
+
+**Trace 数据结构**：一次运行 = 一棵 span 树 `Span{trace_id, span_id, parent_id, type(llm|tool|retrieval|agent), input, output, tokens, latency, error}`，常用 OpenTelemetry 语义约定上报。
+
+**评测流程**：
+1. 建数据集：`{input, expected / rubric}`，来自真实 trace 抽样 + 人工标注。
+2. 跑 Agent 得到输出与 trace。
+3. 评分器：确定性（完全匹配、Schema、工具调用序列是否正确）+ LLM-as-judge（按 rubric 打分）+ 人工抽检。
+4. 指标：任务成功率、步数、成本、延迟、工具错误率；回归对比基线后才能发布。
+
+```python
+for case in dataset:
+    out, trace = agent.run(case.input, tracer=otel)
+    scores.append({"exact": out == case.expected, "judge": judge(case.rubric, out), "steps": len(trace.spans)})
+```
+
+**为什么**：Agent 是多步随机过程，只看最终答案无法定位问题；trace 让每一步可回放，评测集让改 prompt/换模型有客观依据。
+
 ## 本仓关联
 
 YoungFlow/VH 的 gate/decision 文件路由、双向论证，偏质量评测闭环；平台观测应覆盖编排与会话两层。

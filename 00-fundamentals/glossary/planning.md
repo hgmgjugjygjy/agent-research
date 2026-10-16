@@ -32,6 +32,24 @@
 
 ---
 
+## 技术实现原理
+
+**常见规划算法族**：
+- **一次性分解**（Plan-and-Solve）：先列步骤再执行。
+- **交错式**（ReAct）：每步临时决定下一步。
+- **层级分解**（HTN 思路）：目标→子目标→原子动作，递归展开。
+- **搜索式**（Tree of Thoughts / LATS）：生成多个候选下一步，评估打分，按 BFS/DFS/MCTS 扩展最优分支；成本高，适合可评估的难题。
+
+```python
+def tot(state, depth):
+    if depth == 0 or is_goal(state): return state
+    cands = [llm_propose(state) for _ in range(3)]
+    best = max(cands, key=llm_score)
+    return tot(best, depth - 1)
+```
+
+**为什么**：任务越长、失败代价越高，越值得投入前置规划或搜索；简单任务用 ReAct 即可，避免过度规划。
+
 ## 本仓关联
 
 读竞品时：既看有没有 Planner 模块，也看计划是否进入可持久化编排（LangGraph 等）。

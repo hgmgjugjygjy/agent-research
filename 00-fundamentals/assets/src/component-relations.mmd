@@ -1,0 +1,19 @@
+classDiagram
+  class Agent { +goal +state +run() }
+  class LLM { +generate(messages, tools) }
+  class Planner { +plan(goal) Plan }
+  class Memory { +short_term +long_term +recall(q) }
+  class Tool { +name +json_schema +invoke(args) }
+  class MCPClient { +list_tools() +call_tool() }
+  class Retriever { +search(q,k) +rerank() }
+  class Guardrail { +check(input/output) }
+  class Orchestrator { +graph +checkpoint() }
+  Orchestrator "1" o-- "*" Agent : 调度
+  Agent --> LLM : 推理
+  Agent --> Planner : 分解
+  Agent *-- Memory : 拥有
+  Agent o-- "*" Tool : 可调用
+  MCPClient ..> Tool : 动态注册
+  Agent --> Retriever : RAG
+  Retriever --> Memory : 长期记忆检索
+  Agent --> Guardrail : 前后置检查

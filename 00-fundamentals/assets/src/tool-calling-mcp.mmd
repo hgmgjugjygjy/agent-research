@@ -1,0 +1,16 @@
+sequenceDiagram
+  participant App as Agent 运行时
+  participant M as LLM
+  participant C as MCP Client
+  participant S as MCP Server
+  App->>C: 启动时 list_tools
+  C->>S: tools/list (JSON-RPC)
+  S-->>C: 工具名 + JSON Schema
+  App->>M: messages + tools schema
+  M-->>App: tool_call {name, arguments}
+  App->>App: 校验参数(Schema) + 权限
+  App->>C: call_tool
+  C->>S: tools/call
+  S-->>C: result content
+  App->>M: role=tool 回填结果
+  M-->>App: 最终回答 或 下一个 tool_call

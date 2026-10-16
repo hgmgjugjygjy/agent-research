@@ -33,6 +33,21 @@
 
 ---
 
+## 技术实现原理
+
+**输出结构**：把自由文本请求解析为 `TaskSpec{intent, entities/slots, constraints, success_criteria, missing_info[]}`。
+
+**流程**：意图分类（规则/小模型/LLM 结构化输出）→ 槽位抽取 → 缺失必填槽位时生成澄清问题（而非猜测）→ 规范化后的 TaskSpec 交给 Planner。
+
+```python
+spec = llm(UNDERSTAND_PROMPT, user_msg, response_format=TaskSpec)
+if spec.missing_info:
+    return ask_user(spec.missing_info)
+plan = planner(spec)
+```
+
+**为什么**：越早把模糊需求变成结构化规格，后续规划和验收越稳定；「问一次」比「做错再返工」便宜。
+
 ## 本仓关联
 
 接入层就应做权限与范围归一；「理解」失败时 fail-closed，而不是乐观执行。

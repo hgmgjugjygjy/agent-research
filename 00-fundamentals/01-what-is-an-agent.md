@@ -74,7 +74,19 @@ flowchart LR
 | **Guardrails / HITL** | 范围、权限、不可逆操作、人工审批 | [guardrails-hitl](glossary/guardrails-hitl.md) |
 | **Observability** | Trace、日志、成本、回放 | [evaluation-trace](glossary/evaluation-trace.md) |
 | **Context compaction** | 长会话压窗，保关键事实 | [context-compaction](glossary/context-compaction.md) |
-| **Multi-agent** | 多角色分工与协调 | [multi-agent](glossary/multi-agent.md) |
+| **Multi-agent** | 多角色分工与协调 | [multi-agent](glossary/multi-agent.md) · [05-multi-agent-collaboration](05-multi-agent-collaboration.md) |
+| **Vector database** | 存向量并做相似度检索，支撑 RAG/记忆 | [vector-database](glossary/vector-database.md) |
+| **Context engineering** | 决定每次调用放什么进上下文 | [06-context-engineering](06-context-engineering.md) · [context-explosion](glossary/context-explosion.md) |
+
+### 2.0 一张图看组成
+
+![系统架构示意图](assets/system-architecture.svg)
+
+*图 1：Agent 系统架构。中间黄色框是 **Agent 内核**（Planner → LLM 推理 → Reflection 自循环）；内核外侧是它的「手」（工具层 + MCP）、「资料室」（RAG）、「笔记本」（Memory）；上方编排层管流程与检查点，HITL 挂在编排层上，虚线的 Trace/Eval 横切全部模块。上表每一行都能在图中找到对应方块。PNG：[system-architecture.png](assets/system-architecture.png)*
+
+![数据流图](assets/dataflow.svg)
+
+*图 2：一次请求的数据流：请求 → 理解 → 规划 → 工具/检索 → 观察并写记忆 → 反思（不满意回到规划）→ 输出。这正是 §1.2「感知–决策–行动」的工程展开：理解＝感知，规划/反思＝决策，工具＝行动。PNG：[dataflow.png](assets/dataflow.png)*
 
 ### 2.1 Memory vs RAG（易混，先钉死）
 
@@ -95,13 +107,25 @@ flowchart LR
 
 推理与行动交替；每轮看工具结果再想。适合探索性强、工具结果不确定的任务。见 [agent-loop](glossary/agent-loop.md)。
 
+![ReAct 循环](assets/react-loop.svg)
+
+*图 3：ReAct 循环：Thought → Action（tool_call）→ 执行 → Observation 回填 → 判断完成/超限。终止由代码判断（无 tool_call 或步数上限），而非信任模型「说完成了」。PNG：[react-loop.png](assets/react-loop.png)*
+
 ### 3.2 Plan-Execute
 
 先出计划（或阶段图），再逐步执行；中途可重规划。适合目标清晰、步骤可枚举的战役式任务（渗透流水线、多阶段审计）。编排层常用 [LangGraph](../02-frameworks/langgraph.md)。
 
+![Plan-Execute 循环](assets/plan-execute.svg)
+
+*图 4：Plan-Execute：Planner 生成步骤队列，Executor 逐步执行（单步内可再跑 ReAct），Replanner 决定继续/调整/收尾。PNG：[plan-execute.png](assets/plan-execute.png)*
+
 ### 3.3 多 Agent
 
-Orchestrator 拆子任务给专长 Agent（检索、分析、写作、审查）；需共享状态与消息协议。见 [multi-agent](glossary/multi-agent.md)；竞品样板：Strix、DeepAudit。
+Orchestrator 拆子任务给专长 Agent（检索、分析、写作、审查）；需共享状态与消息协议。见 [multi-agent](glossary/multi-agent.md) 与五种模式详解 [05-multi-agent-collaboration.md](05-multi-agent-collaboration.md)；竞品样板：Strix、DeepAudit。
+
+![多 Agent 协作](assets/multi-agent.svg)
+
+*图 5：Supervisor 模式：主管分派子任务给 Research/Coder/Reviewer，结果汇入共享状态再由主管汇总。PNG：[multi-agent.png](assets/multi-agent.png)*
 
 ```mermaid
 flowchart TB
@@ -123,6 +147,28 @@ flowchart TB
     W2 --> OR
   end
 ```
+
+---
+
+## 3.4 技术实现原理：Agent 的最小可运行形态
+
+一个 Agent 在代码层面就是「**带工具的 LLM + 一个 while 循环 + 状态**」：
+
+```python
+msgs = [{"role": "system", "content": "你是研究助理，可用工具：search, read"},
+        {"role": "user", "content": goal}]
+while True:
+    r = llm.chat(msgs, tools=[SEARCH_SCHEMA, READ_SCHEMA])   # 1 决策
+    msgs.append(r.message)
+    if not r.tool_calls:                                    # 2 无动作 = 完成
+        break
+    for c in r.tool_calls:                                  # 3 行动
+        msgs.append({"role": "tool", "tool_call_id": c.id,
+                     "content": TOOLS[c.name](**json.loads(c.arguments))})  # 4 观察回填
+print(r.content)
+```
+
+其余所有组件都是在这个骨架上加功能：Planner＝循环前先生成计划；Memory/RAG＝组装 `msgs` 时注入额外上下文；Guardrails＝执行工具前插检查；Orchestration＝把多个这样的循环串成图；Compaction＝`msgs` 过长时压缩。**为什么是循环**：单次调用无法利用行动后的新信息，循环让模型基于观察修正下一步——这正是 Agent 与 chatbot 的本质区别。
 
 ---
 

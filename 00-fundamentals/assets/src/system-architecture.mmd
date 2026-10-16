@@ -1,0 +1,18 @@
+flowchart TB
+  U[用户 / 上游系统] --> GW[入口网关<br/>鉴权·限流·输入护栏]
+  GW --> ORC[编排层 Orchestration<br/>状态机 / 图 / 检查点]
+  subgraph CORE[Agent 内核]
+    PL[Planner 规划] --> LLM[LLM 推理核<br/>Reasoning / CoT]
+    LLM --> REF[Reflection 反思/校验]
+    REF -->|不通过| PL
+  end
+  ORC --> CORE
+  LLM <-->|tool_call / 结果| TL[工具层 Tools<br/>Function Calling]
+  TL <--> MCP[MCP 服务器<br/>文件·DB·SaaS·API]
+  LLM <-->|检索| RAG[RAG<br/>向量库 + 重排]
+  LLM <-->|读写| MEM[Memory<br/>短期上下文 / 长期存储]
+  ORC --> HITL[HITL 人工审批]
+  CORE --> OUT[输出护栏] --> U
+  OBS[可观测 Trace / Eval] -.-> ORC
+  OBS -.-> CORE
+  OBS -.-> TL

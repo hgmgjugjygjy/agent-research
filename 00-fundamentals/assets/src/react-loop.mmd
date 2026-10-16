@@ -1,0 +1,8 @@
+flowchart TB
+  S([目标]) --> T[Thought 思考<br/>我下一步该做什么]
+  T --> A[Action 行动<br/>tool_call name+args]
+  A --> X[执行工具]
+  X --> O[Observation 观察<br/>结果回填 messages]
+  O --> J{完成? / 步数超限?}
+  J -->|否| T
+  J -->|是| F([Final Answer])

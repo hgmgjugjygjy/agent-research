@@ -1,0 +1,8 @@
+flowchart TB
+  IN[新消息/观察] --> WM[工作记忆<br/>当前 context window]
+  WM -->|超阈值| CP[压缩 Compaction<br/>摘要旧轮次]
+  CP --> WM
+  WM -->|抽取事实/偏好| EX[记忆抽取器]
+  EX --> LT[(长期记忆<br/>向量库 + KV/图)]
+  LT -->|相似度+时间+重要性召回| WM
+  EP[(情景记忆<br/>历史轨迹)] -.-> LT

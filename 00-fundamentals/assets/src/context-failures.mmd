@@ -1,0 +1,11 @@
+flowchart LR
+  F[上下文常见失败] --> A[污染 Poisoning<br/>错误观察/幻觉被当事实反复引用]
+  F --> B[丢失 Loss<br/>压缩/截断丢掉约束或待办]
+  F --> C[Lost in the Middle<br/>长上下文中段信息利用率低]
+  F --> D[干扰 Distraction<br/>无关工具/文档过多]
+  F --> E[冲突 Clash<br/>新旧信息矛盾未消解]
+  A --> A1[对策: 观察带来源 · 反思校验 · 可回滚 checkpoint]
+  B --> B1[对策: 结构化摘要模板 · 固定保留约束区]
+  C --> C1[对策: 关键信息放首尾 · rerank 后少而精]
+  D --> D1[对策: 渐进披露 · 工具路由]
+  E --> E1[对策: 时间戳 · 记忆 UPDATE/DELETE]

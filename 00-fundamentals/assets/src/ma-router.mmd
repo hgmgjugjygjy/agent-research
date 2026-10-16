@@ -1,0 +1,10 @@
+flowchart LR
+  Q[用户请求] --> R{Router<br/>分类器/小模型/规则}
+  R -->|账单| E1[Billing Agent]
+  R -->|技术| E2[Tech Agent]
+  R -->|检索问答| E3[RAG Agent]
+  R -->|置信度低| H[兜底: 通用 Agent / 人工]
+  E1 --> O[答复]
+  E2 --> O
+  E3 --> O
+  H --> O

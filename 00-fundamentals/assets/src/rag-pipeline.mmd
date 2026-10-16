@@ -1,0 +1,14 @@
+flowchart TB
+  subgraph OFF[离线索引]
+    direction LR
+    D1[文档 PDF/MD/网页] --> D2[解析清洗] --> D3[切块 Chunk<br/>300-800 token + 重叠] --> D4[Embedding 模型] --> D5[(向量库<br/>HNSW/IVF + 元数据)]
+  end
+  subgraph ON[在线查询]
+    direction LR
+    Q1[用户问题] --> Q2[查询改写/扩展] --> Q3[Embedding]
+    Q3 --> Q4[ANN 检索 topK=20<br/>+ BM25 混合]
+    D5 --> Q4
+    Q4 --> Q5[Rerank 交叉编码器<br/>取 top5]
+    Q5 --> Q6[拼 Prompt<br/>上下文+引用编号]
+    Q6 --> Q7[LLM 生成<br/>带引用回答]
+  end

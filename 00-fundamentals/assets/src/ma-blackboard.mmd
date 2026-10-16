@@ -1,0 +1,8 @@
+flowchart TB
+  BB[(Blackboard 共享状态<br/>事实·假设·待办·版本号)]
+  K1[专家 Agent: 检索] <-->|读条件/写事实| BB
+  K2[专家 Agent: 分析] <-->|读条件/写假设| BB
+  K3[专家 Agent: 验证] <-->|读假设/写结论| BB
+  CTL[控制器 Controller<br/>选下一个被激活的专家] --> BB
+  BB --> CTL
+  BB --> DONE{满足终止条件?} -->|是| OUT[输出]
