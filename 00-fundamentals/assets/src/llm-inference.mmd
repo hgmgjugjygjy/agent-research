@@ -1,0 +1,17 @@
+sequenceDiagram
+  participant U as 请求
+  participant TK as Tokenizer
+  participant M as 模型 GPU
+  participant KV as KV Cache
+  U->>TK: prompt 文本
+  TK->>M: N 个 token id
+  Note over M: Prefill 预填充<br/>并行计算全部 N 个 token
+  M->>KV: 写入每层 K/V (N 个)
+  M-->>U: 第 1 个输出 token (首字延迟 TTFT)
+  loop Decode 逐 token
+    M->>KV: 读取历史 K/V
+    Note over M: 只算 1 个新 token 的 Q/K/V
+    M->>KV: 追加新 K/V
+    M-->>U: 下一个 token (流式)
+  end
+  Note over U,M: 遇到结束符或 max_tokens 停止

@@ -21,10 +21,11 @@
 ## 阅读顺序（建议）
 
 1. **[01-what-is-an-agent.md](01-what-is-an-agent.md)** — 定义、与 chatbot 差异、核心组成、典型循环、与本仓选型关系  
-2. **[02-agent-architecture.md](02-agent-architecture.md)** — 工程架构走读（含自写 Mermaid；外部示意图作附录参考）  
-3. **[05-multi-agent-collaboration.md](05-multi-agent-collaboration.md)** — 五种多 Agent 协作模式、上下文爆炸、何时值得  
-4. **[06-context-engineering.md](06-context-engineering.md)** — 上下文工程：预算、分区、压缩、隔离、常见失败  
-5. **[glossary/](glossary/README.md)** — 关键名词专篇（含 RAG、编排、门禁、多 Agent、上下文压缩等）
+2. **[03-large-language-models.md](03-large-language-models.md)** — LLM 入门：定义、能力、训练、参数规模、上下文窗口、与 Agent 的关系、各家官方描述与价格表、技术实现原理  
+3. **[02-agent-architecture.md](02-agent-architecture.md)** — 工程架构走读（含自写 Mermaid；外部示意图作附录参考）  
+4. **[05-multi-agent-collaboration.md](05-multi-agent-collaboration.md)** — 五种多 Agent 协作模式、上下文爆炸、何时值得  
+5. **[06-context-engineering.md](06-context-engineering.md)** — 上下文工程：预算、分区、压缩、隔离、常见失败  
+6. **[glossary/](glossary/README.md)** — 关键名词专篇（含 RAG、编排、门禁、多 Agent、上下文压缩等）
 
 不必一次读完所有名词；遇到主文加粗词时点进专篇即可。
 
@@ -37,6 +38,7 @@
   README.md                 ← 本页
   01-what-is-an-agent.md
   02-agent-architecture.md
+  03-large-language-models.md   ← 阅读顺序排在 01 之后
   05-multi-agent-collaboration.md
   06-context-engineering.md
   glossary/                 ← 关键名词专篇（英文文件名，含技术实现原理）
@@ -74,6 +76,10 @@
 | 上下文治理策略 | [context-strategies.svg](assets/context-strategies.svg) · [png](assets/context-strategies.png) · [src](assets/src/context-strategies.mmd) | 06 §3 |
 | 上下文常见失败 | [context-failures.svg](assets/context-failures.svg) · [png](assets/context-failures.png) · [src](assets/src/context-failures.mmd) | 06 §4 |
 | 上下文爆炸成因与解法 | [context-explosion.svg](assets/context-explosion.svg) · [png](assets/context-explosion.png) · [src](assets/src/context-explosion.mmd) | glossary/context-explosion |
+| Transformer 前向与自注意力 | [llm-transformer.svg](assets/llm-transformer.svg) · [png](assets/llm-transformer.png) · [src](assets/src/llm-transformer.mmd) | 03 §9 |
+| LLM 训练流程 | [llm-training.svg](assets/llm-training.svg) · [png](assets/llm-training.png) · [src](assets/src/llm-training.mmd) | 03 §3 |
+| 推理 prefill / decode / KV Cache | [llm-inference.svg](assets/llm-inference.svg) · [png](assets/llm-inference.png) · [src](assets/src/llm-inference.mmd) | 03 §9.6 |
+| LLM 在 Agent 中的位置 | [llm-in-agent.svg](assets/llm-in-agent.svg) · [png](assets/llm-in-agent.png) · [src](assets/src/llm-in-agent.mmd) | 03 §6 · glossary/llm |
 
 重新渲染：`mmdc -i assets/src/X.mmd -o assets/X.svg -b white` 与 `-o assets/X.png -s 2`（需 CJK 字体）。
 
@@ -101,6 +107,7 @@
 | 工具适配 / 协议 | [LangChain](../02-frameworks/langchain.md)、[MCP](glossary/mcp.md) |
 | 门禁 / HITL | [guardrails-hitl](glossary/guardrails-hitl.md)、Aurora 四层门禁 |
 | 质量 / decide 螺旋 | YoungFlow / VulnHunter |
+| LLM / 推理引擎 | [03-large-language-models](03-large-language-models.md) · [llm](glossary/llm.md) |
 | 检索增强 | [rag](glossary/rag.md)（与 Memory 区分）· [vector-database](glossary/vector-database.md) |
 | 上下文治理 | [06-context-engineering](06-context-engineering.md) · [context-explosion](glossary/context-explosion.md) |
 | 多 Agent 协作 | [05-multi-agent-collaboration](05-multi-agent-collaboration.md) |

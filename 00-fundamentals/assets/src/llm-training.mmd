@@ -1,0 +1,7 @@
+flowchart TB
+  D1[(海量文本/代码<br/>多语言 · 多模态)] --> PT[预训练 Pre-training<br/>目标: 下一 token 预测<br/>得到 Base 模型]
+  PT --> SFT[监督微调 SFT<br/>指令-回答对<br/>含工具调用示范]
+  SFT --> PO[偏好优化<br/>RLHF: 奖励模型 + PPO<br/>或 DPO 直接偏好]
+  PO --> RL[强化学习 推理/Agent 任务<br/>可验证奖励: 测试通过/答案正确]
+  RL --> M[对齐后的 Chat / Reasoning 模型]
+  H[人类标注偏好<br/>A 优于 B] --> PO

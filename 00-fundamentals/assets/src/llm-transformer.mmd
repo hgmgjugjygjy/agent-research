@@ -1,0 +1,13 @@
+flowchart TB
+  T[输入文本 「今天天气」] --> TK[Tokenizer 分词<br/>→ token id 序列]
+  TK --> EM[Embedding 查表<br/>id → d 维向量 + 位置编码 RoPE]
+  EM --> B1
+  subgraph BLK[Transformer Block × N 层]
+    B1[RMSNorm] --> AT[多头自注意力<br/>Q·Kᵀ/√d → softmax → ·V<br/>因果掩码: 只看左侧]
+    AT --> R1((+ 残差))
+    R1 --> N2[RMSNorm] --> FF[前馈 FFN / MoE<br/>路由到 top-k 专家]
+    FF --> R2((+ 残差))
+  end
+  R2 --> LM[LM Head<br/>→ 词表大小 logits]
+  LM --> SM[softmax → 下一 token 概率分布]
+  SM --> SP[采样 temperature / top-p] --> OUT[输出 token 「晴」]

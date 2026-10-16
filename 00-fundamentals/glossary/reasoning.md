@@ -49,6 +49,10 @@ if d.confidence < 0.6: d = escalate(ctx)
 
 **为什么**：把「想」与「做」分离并显式化，便于检查与路由；按难度分配推理预算控制成本。
 
+## 相关
+
+- LLM 原理：[llm.md](llm.md) · [../03-large-language-models.md](../03-large-language-models.md)
+
 ## 本仓关联
 
 会话层（pi 等）与编排层都依赖可靠 tool-calling 推理；门禁决策可交给专用判定，不必全靠同一生成模型「自觉」。

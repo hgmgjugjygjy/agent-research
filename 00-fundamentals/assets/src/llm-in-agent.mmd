@@ -1,0 +1,10 @@
+flowchart TB
+  subgraph AG[Agent 系统]
+    direction TB
+    CTX[上下文组装<br/>System · 工具 Schema · 记忆 · RAG · 历史] --> LLM{{LLM 推理引擎 · 大脑<br/>理解 · 推理 · 决策 · 生成}}
+    LLM -->|文本回答| OUT[输出]
+    LLM -->|tool_call JSON| EX[执行器 / 工具 / MCP]
+    EX -->|Observation| CTX
+    MEM[(记忆 / 向量库)] --> CTX
+    ORC[编排 · 门禁 · 预算] -.控制.-> LLM
+  end

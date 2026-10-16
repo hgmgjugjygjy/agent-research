@@ -11,6 +11,7 @@
 | 中文 | English | 一句话 | 文档 |
 |---|---|---|---|
 | Agent 核心循环 / ReAct | Agent Loop / ReAct | Thinking→Action→Observation 热循环 | [agent-loop.md](agent-loop.md) |
+| 大语言模型 | LLM | Agent 的推理引擎；训练、推理、价格 | [llm.md](llm.md) · [../03-large-language-models.md](../03-large-language-models.md) |
 | 规划器 / 规划 | Planner / Planning | 目标拆步或拆阶段 | [planner.md](planner.md) · [planning.md](planning.md) |
 | 推理 | Reasoning | 决定下一步做什么、怎么做 | [reasoning.md](reasoning.md) |
 | 思维链 | Chain of Thought | 显式中间推理步骤 | [chain-of-thought.md](chain-of-thought.md) |
@@ -36,6 +37,7 @@
 
 ## 相关主文
 
+- [../03-large-language-models.md](../03-large-language-models.md) — 大语言模型入门
 - [../05-multi-agent-collaboration.md](../05-multi-agent-collaboration.md) — 五种多 Agent 协作模式
 - [../06-context-engineering.md](../06-context-engineering.md) — 上下文工程
 

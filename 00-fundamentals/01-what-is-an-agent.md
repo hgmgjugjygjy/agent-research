@@ -62,7 +62,7 @@ flowchart LR
 
 | 组成 | 职责（一句话） | 专篇 |
 |---|---|---|
-| **LLM 推理核** | 理解、推理、生成计划与工具调用参数 | [reasoning](glossary/reasoning.md) · [prompt](glossary/prompt-system-prompt.md) |
+| **LLM 推理核** | 理解、推理、生成计划与工具调用参数 | [llm](glossary/llm.md) · [03-large-language-models](03-large-language-models.md) · [reasoning](glossary/reasoning.md) · [prompt](glossary/prompt-system-prompt.md) |
 | **Planner / Planning** | 把目标拆成可执行步骤或阶段 | [planner](glossary/planner.md) |
 | **Tools / Function calling** | 让模型调用外部能力（检索、库、API、Shell…） | [tool](glossary/tool.md) |
 | **Memory** | 短/长/工作记忆，跨步一致与续跑 | [memory](glossary/memory.md) |
@@ -199,4 +199,4 @@ print(r.content)
 
 > 来源：改编自小红书「林纾」思路。中轴 Planner→Reasoning→Loop→Reflection 与侧翼 Memory/Tool/MCP 仍有效；落地时请叠上门禁与编排层。
 
-更细的端到端走读见 **[02-agent-architecture.md](02-agent-architecture.md)**。
+下一篇建议读 **[03-large-language-models.md](03-large-language-models.md)**（LLM 入门）；更细的端到端走读见 **[02-agent-architecture.md](02-agent-architecture.md)**。

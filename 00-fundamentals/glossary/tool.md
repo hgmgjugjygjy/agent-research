@@ -63,6 +63,10 @@ for call in resp.tool_calls:
 
 **为什么**：让模型只负责「决定调用什么、参数是什么」，执行由确定性代码完成——可校验、可审计、可加权限；Schema 是模型与代码之间的契约。
 
+## 相关
+
+- 工具调用是怎么训练出来的：[../03-large-language-models.md#99-工具调用是怎么训出来的](../03-large-language-models.md)
+
 ## 本仓关联
 
 LangChain 工具适配面广；pi/dsh 强调会话内 tool loop；MCP 提供协议化连接。平台要维护**工具白名单与风险分级**。
