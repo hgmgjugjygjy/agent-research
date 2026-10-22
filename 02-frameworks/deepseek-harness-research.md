@@ -166,42 +166,42 @@ DeepSeek Harness 对运行边界的定义较严格：
 ```mermaid
 sequenceDiagram
     participant Inbox as Durable Inbox
-    participant Loop as ReactLoopAgent
+    participant AgentLoop as ReactLoopAgent
     participant Hooks as Cordis Events
     participant Session as Session Log
     participant Prompt as System Prompt
     participant LLM as ctx.llm
     participant Tools as ctx.tools
 
-    Inbox->>Loop: 唤醒 / pending input
-    Loop->>Session: turn/start
-    Loop->>Inbox: claim(next-step + 可选 next-turn)
-    Loop->>Prompt: assemble
-    Loop->>Hooks: agent/pre-step waterfall
+    Inbox->>AgentLoop: 唤醒 / pending input
+    AgentLoop->>Session: turn/start
+    AgentLoop->>Inbox: claim(next-step + 可选 next-turn)
+    AgentLoop->>Prompt: assemble
+    AgentLoop->>Hooks: agent/pre-step waterfall
     alt 拒绝或无输入
-        Loop->>Session: turn/end
+        AgentLoop->>Session: turn/end
     else 接纳
-        Loop->>Session: step/start
-        Loop->>Hooks: agent/request waterfall
-        Loop->>LLM: prepareCall(config, signal)
-        Note over Loop,Session: prepare 成功后才提交 system/user 输入
-        Loop->>Session: request/header + request/context
-        Loop->>Session: system/message + user/message
-        Loop->>Session: deriveMessages()
-        Loop->>LLM: llm/stream waterfall
+        AgentLoop->>Session: step/start
+        AgentLoop->>Hooks: agent/request waterfall
+        AgentLoop->>LLM: prepareCall(config, signal)
+        Note over AgentLoop,Session: prepare 成功后才提交 system/user 输入
+        AgentLoop->>Session: request/header + request/context
+        AgentLoop->>Session: system/message + user/message
+        AgentLoop->>Session: deriveMessages()
+        AgentLoop->>LLM: llm/stream waterfall
         alt 成功 settlement
-            Loop->>Session: assistant/message
+            AgentLoop->>Session: assistant/message
         else 失败 / 重试 / 取消 / stream error
-            Loop->>Session: assistant/attempt
+            AgentLoop->>Session: assistant/attempt
         end
-        Loop->>Tools: 并发池与 exclusive barrier
+        AgentLoop->>Tools: 并发池与 exclusive barrier
         Tools->>Session: tool/call + tool/result
-        Loop->>Session: step/end
+        AgentLoop->>Session: step/end
         alt 仍有工具或 next-step 输入
-            Loop->>Loop: 下一 Step
+            AgentLoop->>AgentLoop: 下一 Step
         else 自然停止
-            Loop->>Hooks: agent/turn-stopping serial
-            Loop->>Session: turn/end
+            AgentLoop->>Hooks: agent/turn-stopping serial
+            AgentLoop->>Session: turn/end
         end
     end
 ```
