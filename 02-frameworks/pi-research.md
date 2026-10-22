@@ -154,7 +154,7 @@ sequenceDiagram
     participant User as 用户/调用方
     participant Session as AgentSession
     participant Projection as Session Projection
-    participant Loop as pi-agent-core
+    participant AgentCore as pi-agent-core
     participant Ext as Extensions
     participant Model as pi-ai / Provider
     participant Tool as Tool Runtime
@@ -162,31 +162,31 @@ sequenceDiagram
     User->>Session: 提交消息
     Session->>Projection: 从当前叶节点重建规范上下文
     Session->>Ext: input / before_agent_start
-    Session->>Loop: prompt(messages)
+    Session->>AgentCore: prompt(messages)
 
     loop 每个模型回合
-        Loop->>Session: prepareNextTurn
+        AgentCore->>Session: prepareNextTurn
         Session->>Projection: 阈值检查，必要时 Compaction
-        Loop->>Loop: 注入已排队 Steering
-        Loop->>Session: prepareRequest
+        AgentCore->>AgentCore: 注入已排队 Steering
+        AgentCore->>Session: prepareRequest
         Session->>Projection: 请求前再次重建规范投影
         Session->>Ext: context / provider hooks
-        Loop->>Model: 流式模型请求
-        Model-->>Loop: 文本、思考块、Tool Calls
+        AgentCore->>Model: 流式模型请求
+        Model-->>AgentCore: 文本、思考块、Tool Calls
         alt 存在 Tool Calls
-            Loop->>Ext: tool_call（可修改或阻止）
-            Loop->>Tool: 参数校验后执行
-            Tool-->>Loop: Tool Result
-            Loop->>Ext: tool_result（可替换或脱敏）
-            Loop->>Session: 持久化 assistant 与 tool result
+            AgentCore->>Ext: tool_call（可修改或阻止）
+            AgentCore->>Tool: 参数校验后执行
+            Tool-->>AgentCore: Tool Result
+            AgentCore->>Ext: tool_result（可替换或脱敏）
+            AgentCore->>Session: 持久化 assistant 与 tool result
         else 无 Tool Call
-            Loop->>Session: 持久化 assistant
+            AgentCore->>Session: 持久化 assistant
         end
-        Loop->>Ext: turn_end
+        AgentCore->>Ext: turn_end
     end
 
-    Loop->>Loop: 无工具与 Steering 时检查 Follow-up
-    Loop-->>Session: agent_end
+    AgentCore->>AgentCore: 无工具与 Steering 时检查 Follow-up
+    AgentCore-->>Session: agent_end
     Session->>Ext: recovery / agent_before_settle
     Session-->>User: agent_settled 或最终结果
 ```
